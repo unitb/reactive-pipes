@@ -46,7 +46,7 @@ data ReactiveF s r a =
         | forall b. MkBehavior b (Event s (b -> b)) (Behavior s b -> a)
         | forall b. AccumEvent b (Event s (b -> b)) (Event s b -> a)
         | Reactimate (Event s (IO ())) a
-        -- | Return (Event s r) a
+        --  | Return (Event s r) a
 
 instance Functor (ReactiveF s r) where
     -- fmap f (Return e g) = Return e $ f g
@@ -79,8 +79,8 @@ data Channel s a =
 data Event s a = Event 
         (ChannelSet s a) 
         (ChannelSet s a)
-    -- | Union (a -> a -> a) (Event a) (Event a)
-    -- | forall b. FMap (b -> STM a) (Event b)
+    --  | Union (a -> a -> a) (Event a) (Event a)
+    --  | forall b. FMap (b -> STM a) (Event b)
     | Never
     deriving Functor
 

@@ -45,7 +45,7 @@ data ReactHandle s =
             Thread (IO (Effect (SafeT IO) ()))
             | Init (STM ())
             | ReactEvent (Event s (IO ()))
-            -- | Result (Event s r)
+            --  | Result (Event s r)
 
 makePrisms ''ReactHandle
 
