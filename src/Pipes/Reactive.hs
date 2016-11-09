@@ -2,6 +2,7 @@
            , GeneralizedNewtypeDeriving
            , ConstraintKinds
            , TypeOperators
+           , CPP
            , LambdaCase
            , RankNTypes
            , GADTs
@@ -20,6 +21,7 @@ import Control.Monad.Writer
 import Control.Concurrent.STM
 
 import Data.Functor.Apply
+import Data.Functor.Contravariant
 import Data.List.NonEmpty
 import           Data.Map (Map)
 import qualified Data.Map as Map
@@ -87,6 +89,11 @@ data Behavior s a = Behavior (STM a)
 
 instance Functor (Channel s) where
     fmap f (Channel b g) = Channel b $ (mapped.mapped %~ f) . g
+
+#if !MIN_VERSION_pipes_concurrency(2,0,6)
+instance Contravariant Output where
+    contramap f (Output g) = Output $ g.f
+#endif
 
 newtype Output' a = Output' (STM (Output a,STM ()))
 

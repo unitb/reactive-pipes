@@ -6,7 +6,7 @@ import Control.Applicative
 -- import Control.Concurrent
 import Control.Lens hiding ((...))
 -- import Control.Lens.Type
-import Control.Lens.Internal.Zoom (Zoomed)
+import Control.Lens.Internal.Zoom hiding (Effect)
 import Control.Monad.Catch hiding (onException,finally)
 import Control.Monad.Free
 import Control.Monad.RWS
