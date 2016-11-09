@@ -84,7 +84,8 @@ foo2 = do
     -- x remove Typeable
     -- x restarting processes
     -- x interleave
-    --   seal the channel to avoid STM exceptions
+    -- x seal the channel to avoid STM exceptions
+    --   seal input
     --   return value! (for all?)
     --   dynamic threads
     --   sockets
