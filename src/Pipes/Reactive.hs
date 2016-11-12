@@ -11,18 +11,19 @@
 module Pipes.Reactive where
 
 import Control.Applicative
+import Control.Category
+import Control.Concurrent.STM
 import Control.Exception.Lens
 import Control.Lens
 import Control.Monad.Catch hiding (onException)
 import Control.Monad.Free
 import Control.Monad.RWS
 import Control.Monad.Writer
-import Control.Concurrent.STM
 
 import Data.Functor.Apply
 import           Data.Map (Map)
 import qualified Data.Map as Map
-import Data.List.NonEmpty
+import Data.List.NonEmpty hiding (reverse)
 import Data.These
 
 import           Pipes
@@ -30,6 +31,8 @@ import           Pipes.Concurrent
 import           Pipes.Core
 import qualified Pipes.Prelude as P
 import           Pipes.Safe hiding (register,bracket)
+
+import Prelude hiding ((.),id)
 
 import Unsafe.Coerce
 
@@ -80,8 +83,8 @@ newtype ChannelSet s a = ChannelSet
 
 data Channel s a = 
         forall b. Channel 
-            { r  :: Output' b -> STM () 
-            , r' :: b -> STM (Maybe a) }
+            (Output' b -> STM ()) 
+            (b -> STM (Maybe a))
 
 data Event s a = Event 
         (ChannelSet s a) 
@@ -102,11 +105,25 @@ switchB :: Behavior s a
         -> ReactPipe s r (Behavior s a)
 switchB b e = do
     Behavior b' <- stepper b e
-    let unBe (Behavior b) = b
+    let unBe (Behavior v) = v
     return $ Behavior $ join $ unBe <$> b'
 
 -- switchE :: Event s (Event s a) -> Event s a
 -- switchE (Event (ChannelSet ch0) (ChannelSet ch1)) = Event (ChannelSet _) (ChannelSet _)
+
+match :: Event s a 
+      -> Event s b
+      -> ReactPipe s r (Event s a)
+match input tick = do
+    lastE <- stepper Nothing $ unionWith const (Just <$> input) (Nothing <$ tick)
+    return $ filterJust $ lastE <@ tick
+
+batch :: Event s a
+      -> Event s b
+      -> ReactPipe s r (Event s (NonEmpty a))
+batch input tick = do
+    lastE <- accumB [] $ unionWith (>>>) (const [] <$ tick) ((:) <$> input)
+    return $ filterJust $ nonEmpty.reverse <$> lastE <@ tick
 
 apCh :: (r -> r') 
      -> (r -> STM (Maybe (a -> b)))
@@ -163,8 +180,8 @@ finalize final = Free $ Finalize final $ Pure ()
 resource :: IO x
          -> (x -> IO ())
          -> ReactPipe s r x
-resource get free = do
-      r <- liftIO get
+resource alloc free = do
+      r <- liftIO alloc
       finalize $ pure $ free r
       return r
 
@@ -339,11 +356,11 @@ autonomous :: a
 autonomous x e f = do
         ref <- Free $ MkBehavior x e Pure
         e' <- spawnSource $ forever $ do
-                x <- lift $ atomically $ do
+                y <- lift $ atomically $ do
                     (e',x') <- f =<< readTVar ref
                     writeTVar ref x'
                     return e'
-                yield x
+                yield y
         return (e',Behavior $ readTVar ref)
 
 accumB :: a -> Event s (a -> a)
@@ -468,7 +485,7 @@ restart r@(Restart n pr) eff
                     Left e -> do
                       liftIO $ print e
                       restart (decrease r) eff
-                    Right r -> return r
+                    Right res -> return res
 
 reactimateSTM :: Event s (STM ()) -> ReactPipe s r ()
 reactimateSTM e = Free $ ReactimateSTM e $ Pure ()

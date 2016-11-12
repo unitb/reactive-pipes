@@ -95,6 +95,17 @@ foo3 = mdo
                 , set _3 . snd <$> e2 ]
         finalize $ [sP|Outcome: %?|] <$> v
 
+foo4 :: ReactPipe s String ()
+foo4 = do
+        e0 <- spawnSource_ $ onTick 750000 (each [1..10])
+        e1 <- spawnSource $ (tickSec >-> P.take 11) >> return "foo"
+        -- e2 <- batch e0 $ unionWith const e0 (0 <$ e1)
+        -- e3 <- match e0 $ unionWith const e0 (0 <$ e1)
+        e2 <- batch e0 $ e1
+        e3 <- match e0 $ e1
+        reactimate $ [sP|batch: %?|] <$> e2
+        reactimate $ [sP|match: %?|] <$> e3
+
 foo2 :: ReactPipe s r ()
 foo2 = do
          e0 <- spawnSourceWith (retries 2) $ P.zipWith const 
@@ -118,6 +129,9 @@ foo2 = do
     -- x dynamic threads
     --   sockets
     --   checkpoint
+    --   reverse the dependency between category and interpreter
+    --      the category should be independent of the interpreter
+    --      and so should the dynamic module
     --   translate exceptions into events
     -- x separate interpreter from abstract syntax
     --   the s parameter of events could be instantiated with an event/behavior 
@@ -129,7 +143,7 @@ foo2 = do
 
 main :: IO ()
 main = do
-    x <- trying id $ runReactive foo3
+    x <- trying id $ runReactive foo4
     print x
     threadDelay 3000000
     -- foo3

@@ -8,7 +8,6 @@ import Control.Concurrent.Async hiding (waitEither)
 import Control.Concurrent.STM as S
 import Control.Exception.Lens
 import Control.Lens hiding ((...))
-import Control.Lens.Internal.Zoom hiding (Effect)
 import Control.Monad.Catch hiding (onException,finally)
 import Control.Monad.Free
 import Control.Monad.RWS
@@ -27,7 +26,7 @@ import           Pipes.Reactive hiding (reactimateSTM)
 import           Pipes.Reactive.Async
 import           Pipes.Safe hiding (register,bracket)
 
-import Text.Printf.TH
+import Text.Printf.TH hiding (s)
 
 type M s r = RWST ()
             [ReactHandle s r]
@@ -50,6 +49,7 @@ mySpawn :: IO (Output' a,Input a)
 mySpawn = do
     let n = 1
     writers <- newTVarIO 0
+    let _ = writers :: TVar Int
     (out,input,_seal) <- spawn' $ bounded n
     let getOut = do
                 modifyTVar writers succ
@@ -116,8 +116,8 @@ reactimateSTM Never = return ()
 reactimateSTM (Event _ f) = do
         liftSTMLater $ registerSet f $ Output' $ return (Output (True <$),return ())
 
-allocate :: (Zoom m n a s,Enum a) 
-         => LensLike' (Zoomed m a) s a -> n a
+allocate :: (Enum a,Monad m,Monoid w) 
+         => Lens' s a -> RWST r w s m a
 allocate ln = zoom ln $ state $ liftA2 (,) id succ
 
 catOutput :: Output (Maybe a) -> Output a
@@ -127,10 +127,10 @@ makeChannel :: M s r (ChannelSet s a,Output' a)
 makeChannel = do 
         n <- allocate id
         v <- lift $ newTVarIO []
-        let ch (Output' out) = modifyTVar v . (:) =<< out
+        let ch (Output' out') = modifyTVar v . (:) =<< out'
             chSet = ChannelSet $ Map.singleton n $ Channel ch pure
-            get = Output' $ bimap catOutput run . foldMap (second Cons) <$> readTVar v
-        return (chSet,get)
+            out = Output' $ bimap catOutput run . foldMap (second Cons) <$> readTVar v
+        return (chSet,out)
 
 withChannel :: MonadSafe m
             => Output' a -> (Output a -> STM (m r)) -> STM (m r)
@@ -226,7 +226,7 @@ runReactive :: (forall s. ReactPipe s r a) -> IO r
 runReactive prg = compile prg >>= fmap snd . _2 runMachine
 
 runMachine :: Machine r -> IO r
-runMachine (Machine result ts' final) = do
+runMachine (Machine res ts' final) = do
         let wrapup r = do
                 mapM_ cancel <=< atomically . readTVar $ r
                 join $ atomically final
@@ -235,7 +235,7 @@ runMachine (Machine result ts' final) = do
           (\r -> do
             hs  <- mapM (async.runEffect.runSafeP) ts'
             atomically $ writeTVar r hs
-            collectAll_ result (writeTVar r) hs >>= \case 
+            collectAll_ res (writeTVar r) hs >>= \case 
                 Right x -> return x
                 Left (e :| _) -> throwM e)
 

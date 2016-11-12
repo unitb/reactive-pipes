@@ -1,24 +1,24 @@
 {-# LANGUAGE QuasiQuotes,OverloadedStrings #-}
 module Main where
 
-import Control.Applicative
+-- import Control.Applicative
 -- import Control.Concurrent (threadDelay)
-import Control.Concurrent.Async
-import Control.Monad
+-- import Control.Concurrent.Async
+-- import Control.Monad
 
 -- import System.Posix.Process.ByteString
 
-import Data.Either.Combinators
-import Data.Serialize
+-- import Data.Either.Combinators
+-- import Data.Serialize
 
 -- import Network.Socket
 
-import           Pipes 
-import qualified Pipes.Prelude as P
+-- import           Pipes 
+-- import qualified Pipes.Prelude as P
 -- import           Pipes.Reactive
 -- import           Pipes.Reactive.Interpreter as P
-import           Pipes.Reactive.Socket
-import           Pipes.Safe
+-- import           Pipes.Reactive.Socket
+-- import           Pipes.Safe
 -- import           Pipes.Tick
 
 import Prelude hiding (putStr,getLine)
@@ -66,6 +66,6 @@ mainLoop sock = do
  
 runConn :: (Socket, SockAddr) -> IO ()
 runConn (sock, _) = do
-    send sock "Hello!\n"
+    _ <- send sock "Hello!\n"
     close sock
 
