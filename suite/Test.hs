@@ -1,14 +1,25 @@
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE QuasiQuotes,RecursiveDo,TupleSections #-}
 module Main where
 
 import Control.Applicative
 import Control.Concurrent (threadDelay)
+import Control.Exception.Lens
+-- import Control.Concurrent.Async
+import Control.Lens hiding (each)
 import Control.Monad
+
+-- import System.Posix.Process.ByteString
+
+-- import Data.Array
+-- import Data.Either.Combinators
+-- import Data.Serialize
 
 import           Pipes 
 import qualified Pipes.Prelude as P
 import           Pipes.Reactive
 import           Pipes.Reactive.Interpreter as P
+-- import           Pipes.Reactive.Socket
+-- import           Pipes.Safe
 import           Pipes.Tick
 
 import Prelude hiding (putStr,getLine)
@@ -40,7 +51,7 @@ import Text.Printf.TH
 
 foo :: ReactPipe s r ()
 foo = do
-         e0 <- spawnSourceWith (retries 2) $ P.zipWith const 
+         e0 <- spawnSourceWith_ (retries 2) $ P.zipWith const 
                 (each [1..6] >-> P.mapM (liftA2 (>>) [sP|send: %d|] return)) 
                 (tick 1000000)
          -- >-> P.map (const ()) >-> numbers 0
@@ -68,6 +79,22 @@ foo = do
                         lift $ threadDelay 2000000
          reactimate $ print <$> e1
 
+foo3 :: ReactPipe s Int ()
+foo3 = mdo
+        -- let ar = array (1,n) [  ]
+            -- n  = 10
+        e0 <- spawnSource $ P.zipWith const (each [1..10]) tickSec >-> P.map (1,) >> return 1
+        e1 <- spawnSource $ P.zipWith const (each [1..10]) (tick 750000) >-> P.map (2,) >> fail "noooo!"
+        e2 <- spawnSource $ P.zipWith const (each [1..10]) tickSec >-> P.map (3,) >> return 3
+        reactimate $ print <$> e0
+        reactimate $ print <$> e1
+        reactimate $ print <$> e2
+        v <- accumB (0,0,0) $ unionsWith (.) 
+                [ set _1 . snd <$> e0 
+                , set _2 . snd <$> e1 
+                , set _3 . snd <$> e2 ]
+        finalize $ [sP|Outcome: %?|] <$> v
+
 foo2 :: ReactPipe s r ()
 foo2 = do
          e0 <- spawnSourceWith (retries 2) $ P.zipWith const 
@@ -86,12 +113,13 @@ foo2 = do
     -- x interleave
     -- x seal the channel to avoid STM exceptions
     --   seal input
-    --   return value! (for all?)
-    --   dynamic threads
+    -- x return value! (for all?)
+    -- x finalizer
+    -- x dynamic threads
     --   sockets
     --   checkpoint
     --   translate exceptions into events
-    --   separate interpreter from abstract syntax
+    -- x separate interpreter from abstract syntax
     --   the s parameter of events could be instantiated with an event/behavior 
     --          representation. It would prevent the FRP code from analyzing the
     --          contents.
@@ -101,5 +129,8 @@ foo2 = do
 
 main :: IO ()
 main = do
-    runReactive foo
+    x <- trying id $ runReactive foo3
+    print x
+    threadDelay 3000000
+    -- foo3
 

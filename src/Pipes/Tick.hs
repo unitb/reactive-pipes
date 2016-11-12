@@ -13,4 +13,8 @@ tick n = do
         yield =<< liftIO getCurrentTime 
         liftIO $ atomically $ guard =<< readTVar r
         tick n
+ 
+tickSec :: MonadIO m 
+        => Producer UTCTime m r
+tickSec = tick 1000000
 

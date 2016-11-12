@@ -53,8 +53,11 @@ library
   -- Modules exported by the library.
   exposed-modules:     
                     Pipes.Reactive
+                    Pipes.Reactive.Async
                     Pipes.Reactive.Category
+                    Pipes.Reactive.Dynamic
                     Pipes.Reactive.Interpreter
+                    Pipes.Reactive.Socket
                     Pipes.Tick
                     -- Pipes.Test
   
@@ -62,13 +65,14 @@ library
   -- other-modules:       
   
   -- LANGUAGE extensions used by modules in this package.
-  default-extensions:    ExistentialQuantification, TypeOperators, DeriveFunctor, DeriveFoldable, DeriveTraversable, FlexibleContexts, DefaultSignatures, GADTs, FlexibleInstances, RankNTypes, MultiParamTypeClasses, FunctionalDependencies, ScopedTypeVariables, TypeFamilies, GeneralizedNewtypeDeriving
+  default-extensions:    ExistentialQuantification, TypeOperators, DeriveFunctor, DeriveFoldable, DeriveTraversable, FlexibleContexts, DefaultSignatures, GADTs, FlexibleInstances, RankNTypes, MultiParamTypeClasses, FunctionalDependencies, ScopedTypeVariables, TypeFamilies, GeneralizedNewtypeDeriving, TupleSections
   
   -- Other library packages from which modules are imported.
   build-depends:       base >=4.7 && <5
                      , async
                      , bifunctors
                      , bytestring
+                     , cereal
                      , constraints
                      , containers
                      , contravariant
@@ -80,15 +84,19 @@ library
                      , monoid-transformer
                      , mtl
                      , pipes
-                     , pipes-concurrency
+                     , pipes-concurrency >= 2.0.6
                      , pipes-safe
                      , profunctors
                      , semigroupoids
                      , semigroups
+                     , network
                      , stm
                      , text
+                     , these
                      , time
                      , th-printf
+                     , transformers
+                     , vault
   
   -- Directories containing source files.
   hs-source-dirs:      src
@@ -101,10 +109,53 @@ executable test
   main-is: Test.hs
   default-extensions: TypeOperators
   build-depends:    base >= 4.8 && < 5
+                  , array
+                  , either
+                  , cereal
+                  , lens
                   , pipes
+                  , pipes-safe
                   , reactive-pipes
                   , reactive-banana
                   , th-printf
+                  , async
+  default-language:    Haskell2010
+  ghc-options: -threaded
+
+executable test-server
+  hs-source-dirs:      suite
+  main-is: Server.hs
+  default-extensions: TypeOperators
+  build-depends:    base >= 4.8 && < 5
+                  , either
+                  , cereal
+                  , pipes
+                  , network
+                  , pipes-safe
+                  , reactive-pipes
+                  , reactive-banana
+                  , th-printf
+                  , async
+  default-language:    Haskell2010
+  ghc-options: -threaded
+
+executable test-client
+  hs-source-dirs:      suite
+  main-is: Client.hs
+  default-extensions: TypeOperators
+  build-depends:    base >= 4.8 && < 5
+                  , binary
+                  , bytestring
+                  , cereal
+                  , either
+                  , exceptions
+                  , pipes
+                  , network
+                  , pipes-safe
+                  , reactive-pipes
+                  , reactive-banana
+                  , th-printf
+                  , async
   default-language:    Haskell2010
   ghc-options: -threaded
 
@@ -115,6 +166,7 @@ test-suite test-suite
   default-extensions: TypeOperators
   build-depends:    base >= 4.8 && < 5
                   , pipes
+                  , lens
                   , reactive-pipes
                   , reactive-banana
                   , th-printf
