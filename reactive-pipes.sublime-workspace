@@ -1,0 +1,3002 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Fre",
+				"Free1"
+			],
+			[
+				"Cat",
+				"CatchThrow"
+			],
+			[
+				"Ca",
+				"CatchThrow"
+			],
+			[
+				"Exc",
+				"Exception"
+			],
+			[
+				"File",
+				"FileName"
+			],
+			[
+				"un",
+				"unnest"
+			],
+			[
+				"Has",
+				"HasCatch"
+			],
+			[
+				"im",
+				"import\tkeyword"
+			],
+			[
+				"Con",
+				"Console"
+			],
+			[
+				"def",
+				"default-extensions"
+			],
+			[
+				"Is",
+				"IsConsole"
+			],
+			[
+				"G",
+				"Generics"
+			],
+			[
+				"Fi",
+				"FileName"
+			],
+			[
+				"IO",
+				"IOMode"
+			],
+			[
+				"hPut",
+				"HPutStr"
+			],
+			[
+				"HPut",
+				"HPutStr"
+			],
+			[
+				"HG",
+				"HGetLine"
+			],
+			[
+				"H",
+				"HPutStr"
+			],
+			[
+				"does",
+				"DoesFileExist"
+			],
+			[
+				"re",
+				"retract"
+			],
+			[
+				"IsF",
+				"IsFileSystemIO"
+			],
+			[
+				"Str",
+				"StringIO"
+			],
+			[
+				"h",
+				"hClose"
+			],
+			[
+				"newty",
+				"newtype\tkeyword"
+			],
+			[
+				"As",
+				"AsyncT"
+			],
+			[
+				"mod",
+				"module\tkeyword"
+			],
+			[
+				"new",
+				"newtype\tkeyword"
+			],
+			[
+				"drw",
+				"drawAll"
+			],
+			[
+				"qu",
+				"quoteLn"
+			],
+			[
+				"lite",
+				"literate-unitb-scripts"
+			],
+			[
+				"lit",
+				"literate-unitb-scripts"
+			],
+			[
+				"Monad",
+				"MonadIO"
+			],
+			[
+				"quote",
+				"quoteLn"
+			],
+			[
+				"control-i",
+				"control-invariants"
+			],
+			[
+				"show",
+				"showString"
+			],
+			[
+				"liftSh",
+				"liftShowsListPrec"
+			],
+			[
+				"test",
+				"test_case"
+			],
+			[
+				"Qu",
+				"QuickCheckOnly"
+			],
+			[
+				"run_",
+				"run_poTestSuite"
+			],
+			[
+				"PO",
+				"POCases"
+			],
+			[
+				"Qui",
+				"QuickCheckProps"
+			],
+			[
+				"Test",
+				"TestCase"
+			],
+			[
+				"sel",
+				"selected_test_case"
+			],
+			[
+				"sele",
+				"selectAllTestCases"
+			],
+			[
+				"lift",
+				"liftEq"
+			],
+			[
+				"lif",
+				"liftEqPair"
+			],
+			[
+				"eqv",
+				"eqV0"
+			],
+			[
+				"mconc",
+				"mconcat"
+			],
+			[
+				"Abs",
+				"AbstrEvent"
+			],
+			[
+				"showsP",
+				"showsPrec"
+			],
+			[
+				"liftSho",
+				"liftShowsMap"
+			],
+			[
+				"cont",
+				"containers"
+			],
+			[
+				"Eve",
+				"EventMap"
+			],
+			[
+				"Gen",
+				"Generics"
+			],
+			[
+				"liftShow",
+				"liftShowsPrec"
+			],
+			[
+				"lifts",
+				"liftShowList"
+			],
+			[
+				"genericSh",
+				"genericLiftShowsPrec"
+			],
+			[
+				"pri",
+				"printUnitBVersion"
+			],
+			[
+				"insid",
+				"insideAux"
+			],
+			[
+				"C",
+				"Cell1"
+			],
+			[
+				"stack-",
+				"stack-yaml"
+			],
+			[
+				"trav",
+				"travis_long"
+			],
+			[
+				"file",
+				"file-system-mockup"
+			],
+			[
+				"ex",
+				"existential"
+			],
+			[
+				"bi",
+				"bipartite-graph"
+			],
+			[
+				"print",
+				"print-th"
+			],
+			[
+				"run",
+				"runIdentity"
+			],
+			[
+				"from",
+				"fromRight"
+			],
+			[
+				"jo",
+				"joinParser"
+			],
+			[
+				"time",
+				"timeout"
+			],
+			[
+				"z3c",
+				"z3c_capacity"
+			],
+			[
+				"to",
+				"to_string"
+			],
+			[
+				"lens",
+				"lensOf"
+			],
+			[
+				"fiel",
+				"fieldWith"
+			],
+			[
+				"look",
+				"lookupDoc"
+			],
+			[
+				"loo",
+				"lookupDoc"
+			],
+			[
+				"lo",
+				"lookupDoc"
+			],
+			[
+				"Z3",
+				"Z3Config"
+			],
+			[
+				"prism",
+				"prismOf"
+			],
+			[
+				"op",
+				"optionally"
+			],
+			[
+				"opt",
+				"optional"
+			],
+			[
+				"deri",
+				"deriving"
+			],
+			[
+				"Set",
+				"SetOptions"
+			],
+			[
+				"Hash",
+				"Hashable"
+			],
+			[
+				"quad",
+				"qualified"
+			],
+			[
+				"as",
+				"asListWith"
+			],
+			[
+				"data",
+				"data-packaged"
+			],
+			[
+				"litera",
+				"literate-unitb-latex"
+			],
+			[
+				"Nul",
+				"NullTerm"
+			],
+			[
+				"data-",
+				"data-compressed"
+			],
+			[
+				"class",
+				"classy-lens-hierarchy"
+			],
+			[
+				"ghc-",
+				"ghc-options"
+			],
+			[
+				"ret",
+				"return"
+			],
+			[
+				"tra",
+				"transformer-lenses"
+			],
+			[
+				"gener",
+				"generic-instances"
+			],
+			[
+				"hdlPo",
+				"hdlPopLEmp"
+			],
+			[
+				"hdl",
+				"hdlPushLEmp"
+			],
+			[
+				"mchPu",
+				"mchPushLeft"
+			],
+			[
+				"procPop",
+				"procPopLeft"
+			],
+			[
+				"hdlP",
+				"hdlPopLOne"
+			],
+			[
+				"req",
+				"reqPopL"
+			],
+			[
+				"proc",
+				"procPushLeft"
+			],
+			[
+				"read",
+				"readLH"
+			],
+			[
+				"no",
+				"noindent"
+			],
+			[
+				"enum",
+				"enumerate"
+			],
+			[
+				"pref",
+				"tagPrefix"
+			],
+			[
+				"eve",
+				"event"
+			],
+			[
+				"em",
+				"emptyset"
+			],
+			[
+				"v",
+				"vfill"
+			],
+			[
+				"col",
+				"columnbreak"
+			],
+			[
+				"hand",
+				"handle_pushL_non_empty"
+			],
+			[
+				"han",
+				"handle_pushL_non_empty"
+			],
+			[
+				"li",
+				"lipsum"
+			],
+			[
+				"eq",
+				"eqnarray"
+			],
+			[
+				"handle_p",
+				"handle_pushL"
+			],
+			[
+				"bet",
+				"betweenR"
+			],
+			[
+				"rem",
+				"removeguard"
+			],
+			[
+				"remo",
+				"removeact"
+			],
+			[
+				"ini",
+				"initwitness"
+			],
+			[
+				"in",
+				"initialization"
+			],
+			[
+				"if",
+				"ifelse"
+			],
+			[
+				"emp",
+				"emptyfun"
+			],
+			[
+				"Fail",
+				"Failure"
+			],
+			[
+				"Fai",
+				"Failure"
+			],
+			[
+				"Maybe",
+				"MaybeT"
+			],
+			[
+				"pre",
+				"pretty"
+			],
+			[
+				"right",
+				"rightAL"
+			],
+			[
+				"ar",
+				"arKey"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/Control/Monad/Free/STM.hs",
+			"settings":
+			{
+				"buffer_size": 917,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Control/Monad/Free/IO.hs",
+			"settings":
+			{
+				"buffer_size": 865,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Control/Monad/Free/Files.hs",
+			"settings":
+			{
+				"buffer_size": 1957,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Control/Monad/Free/Thread.hs",
+			"settings":
+			{
+				"buffer_size": 1035,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Pipes/Reactive.hs",
+			"settings":
+			{
+				"buffer_size": 14620,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Pipes/Tick.hs",
+			"settings":
+			{
+				"buffer_size": 326,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Control/Monad/Free/Console.hs",
+			"settings":
+			{
+				"buffer_size": 1172,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "reactive-pipes.cabal",
+			"settings":
+			{
+				"buffer_size": 3777,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Control/Monad/Free/Exceptions/Class.hs",
+			"settings":
+			{
+				"buffer_size": 1602,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Control/Monad/Free/STM/Class.hs",
+			"settings":
+			{
+				"buffer_size": 524,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Control/Monad/Free/Thread/Class.hs",
+			"settings":
+			{
+				"buffer_size": 451,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Haskell/Haskell.sublime-build",
+					""
+				],
+				[
+					"Packages/User/Haskell (Stack).sublime-build",
+					""
+				],
+				[
+					"Packages/User/Haskell.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/User/Haskell (Stack).sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/LaTeXTools/LaTeX.sublime-build",
+					""
+				],
+				[
+					"Packages/User/z3.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/LaTeXTools/LaTeX.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"git commit cur",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git push ta",
+				"Git: Push Tags"
+			],
+			[
+				"git push br",
+				"Git: Push Current Branch"
+			],
+			[
+				"git tag",
+				"Git: New Tag"
+			],
+			[
+				"git add",
+				"Git: Add Current File"
+			],
+			[
+				"git status",
+				"Git: Status"
+			],
+			[
+				"git push ",
+				"Git: Push Tags"
+			],
+			[
+				"git push b",
+				"Git: Push Current Branch"
+			],
+			[
+				"git commit curr",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git stau",
+				"Git: Status"
+			],
+			[
+				"git push cr",
+				"Git: Push Current Branch"
+			],
+			[
+				"git commit",
+				"Git: Commit"
+			],
+			[
+				"git push curr",
+				"Git: Push Current Branch"
+			],
+			[
+				"git push cur",
+				"Git: Push Current Branch"
+			],
+			[
+				"git push bur",
+				"Git: Push Current Branch"
+			],
+			[
+				"git stat",
+				"Git: Status"
+			],
+			[
+				"git sta",
+				"Git: Status"
+			],
+			[
+				"git comm",
+				"Git: Commit"
+			],
+			[
+				"git add ",
+				"Git: Add Current File"
+			],
+			[
+				"git commit repo",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"git commit ",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git comm cur",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git commit re",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"git push",
+				"Git: Push Current Branch"
+			],
+			[
+				"git com",
+				"Git: Commit"
+			],
+			[
+				"git commit rep",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"git statu",
+				"Git: Status"
+			],
+			[
+				"g",
+				"Git: Status"
+			],
+			[
+				"git push cu",
+				"Git: Push Current Branch"
+			],
+			[
+				"git pull",
+				"Git: Pull Current Branch"
+			],
+			[
+				"commit curr",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git commit r",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git com curr",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git comm rre",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git diff",
+				"Git: Diff Current File"
+			],
+			[
+				"git ",
+				"Git: Status"
+			],
+			[
+				"git comm curr",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git commit rr",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git pus br",
+				"Git: Push Current Branch"
+			],
+			[
+				"git co fr",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git st",
+				"Git: Status"
+			],
+			[
+				"git comm cr",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git commcur",
+				"Git: Quick Commit (current file)"
+			],
+			[
+				"git co repo",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"git co",
+				"Git: Commit"
+			],
+			[
+				"git commi",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"status",
+				"Git: Status"
+			],
+			[
+				"git comm re",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"git quick ",
+				"Git: Quick Commit (repo)"
+			],
+			[
+				"git add cur",
+				"Git: Add Current File"
+			],
+			[
+				"git pul",
+				"Git: Pull"
+			],
+			[
+				"git pu br",
+				"Git: Push Current Branch"
+			],
+			[
+				"git pu",
+				"Git: Pull"
+			],
+			[
+				"git pus",
+				"Git: Push Current Branch"
+			],
+			[
+				"git ad",
+				"Git: Add..."
+			],
+			[
+				"jump",
+				"LaTeXTools: Jump to PDF"
+			],
+			[
+				"svn add",
+				"SVN: (File) Add"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"latex dele",
+				"LaTexTools: Delete temporary files"
+			],
+			[
+				"insertdate",
+				"InsertDate: Default"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"type",
+				"SublimeHaskell: Show/hide all types"
+			],
+			[
+				"git add cu",
+				"Git: Add Current File"
+			],
+			[
+				"haskel",
+				"SublimeHaskell: Insert type"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"package",
+				"Package Control: Remove Package"
+			],
+			[
+				"add rep",
+				"Package Control: Add Repository"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"git dff",
+				"Git: Diff Current File"
+			],
+			[
+				"",
+				"Git: Add Current File"
+			],
+			[
+				"packagi",
+				"Package Control: Install Package"
+			],
+			[
+				"haskell",
+				"SublimeHaskell: Lint"
+			],
+			[
+				"package ins",
+				"Package Control: Install Package"
+			],
+			[
+				"git add c",
+				"Git: Add Current File"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"git bla",
+				"Git: Blame"
+			],
+			[
+				"git blam",
+				"Git: Blame"
+			],
+			[
+				"blame",
+				"Git: Blame"
+			],
+			[
+				"Package Control: rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"diff",
+				"Git: Diff Current File"
+			],
+			[
+				"lower",
+				"Convert Case: Lower Case"
+			],
+			[
+				"sort",
+				"Sort Lines (Case Sensitive)"
+			],
+			[
+				"spaces",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"commit",
+				"Git: Commit"
+			],
+			[
+				"rever",
+				"File: Revert"
+			],
+			[
+				"sort l",
+				"Sort Lines"
+			],
+			[
+				"log",
+				"Git: Log Current File"
+			],
+			[
+				"wrap",
+				"Word Wrap: Toggle"
+			],
+			[
+				"fold all",
+				"Code Folding: Unfold All"
+			],
+			[
+				"fold",
+				"Code Folding: Fold Tag Attributes"
+			],
+			[
+				"git di",
+				"Git: Diff Current File"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"tex ",
+				"LaTeXTools: Jump to PDF"
+			],
+			[
+				"file",
+				"View: Toggle Open Files in Side Bar"
+			],
+			[
+				"open ",
+				"View: Toggle Open Files in Side Bar"
+			]
+		],
+		"width": 602.0
+	},
+	"console":
+	{
+		"height": 125.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/Console",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/Exceptions",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/Files",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/STM",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/Thread",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Pipes",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Pipes/Reactive",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/suite"
+	],
+	"file_history":
+	[
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Documentation/SummaryGen.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Documentation/Test.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/UnitB/Event.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/UnitB/Machine.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/UnitB/PO.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/UnitB/Proof.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/UnitB/Property.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/UnitB/UnitB.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/partial-order/Data/PartialOrd.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/pretty-printable/Text/Pretty.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-banana-transformers/Reactive/Banana/Monitor.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-banana-transformers/Reactive/Banana/FileSystem.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-banana-transformers/Reactive/Banana/Async.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-threepenny-gui/src/Main.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/app/ZipName.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Code/Synthesis.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/ExprScope.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Machine.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/MachineSpec.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Phase.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Phase/Expressions.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Phase/Latex.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Phase/Proofs.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Phase/Test.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Phase/Types.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Pipeline.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Refinement.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Scope.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Tests/Suite.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Expr/Genericity.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Expr/Parser/Internal/Parser.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Names.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Names/Internals.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Proof/POGenerator.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Proof/Sequent.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Test.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Theories/Arithmetic.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/main/Display_errors.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/main/Run_tests.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/Tools/Quote.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-threepenny-gui/lib/Graphics/UI/Threepenny/Reactive.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/generic-instances/GHC/Generics/Instances.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/invariants/Control/Invariant.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/lens-extra/Control/Lens/Misc.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-config/Data/Bidirectional.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-latex/Latex/Monad.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-latex/Latex/Parser.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-latex/syntactic/Utilities/Syntactic.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Expr/Const.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Expr/Declaration.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Expr/Expr.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/Console/Class.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/Files/Class.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/Exceptions.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/src/Control/Monad/Free/Exceptions/Class.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/bipartite-graph/Data/Graph/Bipartite.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/classy-lens-hierarchy/Control/Lens/HierarchyTH.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/classy-lens-hierarchy/Data/MakeTable.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/data-packaged/Data/Packaged.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/existential/Control/Lens/Bound.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/existential/Data/Factory.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/file-system-mockup/System/IO/FileSystem.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/generic-instances/Data/Tuple/Generics.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-pipes/suite/Test.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/string-lenses/Data/String/Lines.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/syntax-error/Utilities/Syntactic.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/typelist-functor/Data/TypeList.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/unitb-testing/Test/UnitTest.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/Document/Tests/SmallMachine.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/quote.hs",
+		"/tmp/subl stdin PIF1xB.txt",
+		"/usr/bin/ar",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/.stack-work/downloaded/73N3uAXm197J/Data/Existential.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/tex2png-hs/test/Spec.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/unitb-web/stack.yaml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/literate-unitb-scripts.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/unitb-testing/.travis.yml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/main/Find_case.hs",
+		"/Users/simon/Documents/Haskell/Literate",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/npm-debug.log",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/Unit-B/GitHub/npm-debug.log",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/README.md",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/type-map/README.md",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/th-lift-deriving/.travis.yml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-utils/Utilities/Directory.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-utils/Utilities/Config.hs",
+		"/Users/simon/Documents/Haskell/haskell-experiments/travis_long.sh",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/main/options.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-scripts/.stack-work/downloaded/gWPNpwtnscuM/Z3/Version.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-banana-transformers/.travis.yml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/typelist-functor/.travis.yml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/unfoldable/.travis.yml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/partial-order/.travis.yml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/.travis.yml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/string-lenses/.travis.yml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/unitb-testing/unitb-testing.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/unitb-web/unitb-web.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/reactive-banana-transformers/reactive-banana-transformers.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/bipartite-graph/bipartite-graph.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/string-lenses/string-lenses.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/tex2png-hs/tex2png-hs.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/data-packaged/data-packaged.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/pretty-printable/pretty-printable.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/printf-th/printf-th.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/data-compressed/data-compressed.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/th-lift-deriving/th-lift-deriving.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/lens-extra/lens-extra.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/literate-unitb.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/transformer-lenses/transformer-lenses.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/serialize-instances/Data/Serialize/Instances.hs",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/generic-instances/generic-instances.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/classy-lens-hierarchy/classy-lens-hierarchy.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/existential/existential.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/typelist-functor/typelist-functor.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/partial-order/partial-order.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/architecture experiments/dependent-ast/split_lib.sh",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/architecture experiments/type-map/type-map.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/architecture experiments/type-map/README.md",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/file-system-mockup/file-system-mockup.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/show-with/show-with.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/co-applicative/co-applicative.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/data-map-class/data-map-class.cabal",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/data-map-class/stack.yaml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/bipartite-graph/stack.yaml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/classy-lens-hierarchy/stack.yaml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/typelist-functor/stack.yaml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/string-lenses/stack.yaml",
+		"/Users/simon/Documents/Haskell/Literate Unit-B/GitHub/unitb-testing/stack.yaml"
+	],
+	"find":
+	{
+		"height": 39.0
+	},
+	"find_in_files":
+	{
+		"height": 105.0,
+		"where_history":
+		[
+			"*hs,/Users/simon/Documents/Haskell/Literate Unit-B/GitHub,-.stack-work/*",
+			"*hs,/Users/simon/Documents/Haskell/Literate Unit-B/GitHub,-.stack-work",
+			"*hs,/Users/simon/Documents/Haskell/Literate Unit-B/GitHub",
+			".travis.yml,/Users/simon/Documents/Haskell/Literate Unit-B/GitHub",
+			"<open folders>,<open files>",
+			"*tex,,<open folders>,<open files>",
+			"*tex,,<open folders>",
+			"*sty,*tex,,<open folders>",
+			"*sty,*tex,,/Users/simon/Dropbox/Qualifying Exam/simon/chapters/examples/lock-free-sections",
+			"*sty,*tex,<open folders>",
+			"*tex,<open folders>",
+			"*hs,<open folders>",
+			"*cabal,<open folders>",
+			"*hs,<open folders>",
+			"*.cabal,<open folders>",
+			"*hs,<open folders>",
+			"/Users/Simon/Google Drive/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Google Drive/skell 2/literate-unitb-code-gen,*cabal",
+			"/Users/Simon/Google Drive/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Google Drive/skell 2/literate-unitb-code-gen",
+			"/Users/Simon/Google Drive/skell 2/literate-unitb-code-gen/,*hs",
+			"/Users/Simon/Google Drive/skell 2/literate-unitb-code-gen/src/,/Users/Simon/Google Drive/skell 2/literate-unitb-code-gen/utils/,*hs",
+			"/Users/Simon/Google Drive/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*sty",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen,*hs",
+			"/Users/Simon/Library/Application Support/Sublime Text 2/Packages",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,actual*.txt",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*tex",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*.hs,-*test*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-code-gen/,*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-other/,*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-test/,*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb/,*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb/document/tests,*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb/documents/tests,*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb/,<open folders>,*.hs",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb/,<open folders>",
+			"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb/",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			" ",
+			"either",
+			"Impl",
+			"quote",
+			" ",
+			"lts-",
+			"format",
+			"fmt",
+			"K1",
+			"\\t",
+			"data Pro",
+			"Show1",
+			"K1",
+			".stack",
+			"stack",
+			"Foo",
+			"(Read1)",
+			"(Show1)",
+			"(Ord1)",
+			"Eq1",
+			"zip-name",
+			"os:",
+			"Lens",
+			"ExLensType",
+			"inst1",
+			"stack",
+			"script",
+			"travis",
+			"tr",
+			"HOME/[a-z]+(-[a-z]*)*/",
+			"cereal",
+			"unitb-",
+			"utils",
+			"literate-unitb-",
+			"util",
+			"Utilities.Directory",
+			"literate-unitb",
+			"stack",
+			"logic",
+			"dep",
+			"set-",
+			"logic",
+			"-scripts",
+			"\\.\\.",
+			"literate",
+			"\\.\\.",
+			"invariants",
+			"\\.\\.|classy",
+			"bipartite|data-map",
+			"\\.\\.|data-map",
+			"..",
+			"stack",
+			"nightly",
+			"ls",
+			"stack",
+			"Z3_CONFIG",
+			"echo",
+			"-- |",
+			"Serialize.Instance",
+			"Serialize.*HashMap",
+			"map",
+			"Data.HashMap",
+			"uncurryMap",
+			"IsKey Map",
+			"M.IsKey Map",
+			"Swap",
+			"Swap1",
+			"ascElems",
+			"(Map",
+			" Map",
+			"IsKey Map",
+			"\\t",
+			"invariants",
+			"ascElems",
+			"Table",
+			"echo",
+			"Serialize",
+			"Table",
+			"data-map",
+			"$?",
+			"data-map",
+			"Table",
+			"ascElems",
+			"Table",
+			"ascElems",
+			"Table",
+			"ascElems",
+			"Table",
+			"ascElems",
+			"Table",
+			"ascElems",
+			"M.ascElems",
+			"Table",
+			"M.ascElems",
+			"Table",
+			"M.IsKey map",
+			"IsKey map",
+			",M.IsMap map",
+			"IsKey Map",
+			"M.IsKey Map",
+			"Table",
+			"IsKey",
+			"IsMap",
+			"partial-order",
+			"map",
+			"data-map",
+			"..",
+			"classy-",
+			"IsMap",
+			"data-map-class|bipartite-graph",
+			"M.convertMap",
+			"M.Is",
+			"data-map-class",
+			"travis_long",
+			"_long",
+			"travis_wait",
+			"repos",
+			"CABALAR",
+			"ARGS",
+			"cd",
+			"travis_wait",
+			"wait",
+			"generic",
+			"invar",
+			"generic",
+			"show-",
+			"packaged",
+			"generic"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			" ",
+			"F.\\1",
+			"F.Eq1",
+			"HOME/literate-unitb/",
+			"Ord",
+			"elems",
+			"(M.Map",
+			" M.Map",
+			"Ord",
+			"elems",
+			"Map",
+			"elems",
+			"Map",
+			"M.Map",
+			"elems",
+			"M.Map",
+			"elems",
+			"M.Map",
+			"elems",
+			"M.Map",
+			"elems",
+			"M.elems",
+			"M.Map",
+			"M.elems",
+			"M.Map",
+			"Ord",
+			"",
+			"Ord",
+			"Map",
+			"",
+			"Map",
+			"\\\\mch{\\1}",
+			"\\\\procPushLeft",
+			"\\\\procPopLeft",
+			"\\\\mchPushLeft{\\1}",
+			"\\\\mchPopLeft{\\1}",
+			"\\\\procPopLeft",
+			"\\\\proc\\1\\2",
+			"\\\\mchPopLeft{\\1}",
+			"\\\\mchPopRight{\\1}",
+			"\\\\mchPushRight{\\1}",
+			"\\\\mchPushLeft{\\1}",
+			"\\\\mch{\\1}",
+			"\\mch{\\1}",
+			"\\procPushLeft",
+			"\\procPopLeft",
+			"trash",
+			"enumerate",
+			"~\\}$",
+			"$\\{~",
+			"\\{~",
+			"remL",
+			"resL",
+			"rem",
+			"{note:to:self}",
+			"comment",
+			"\\1\\lor r \\in",
+			"\\prepareNew",
+			"\\readLhLeft",
+			"\\1\\\\_",
+			"\\EXTPushLEmpty",
+			"\\\\reqP\\1",
+			"\\\\hdlP\\1Events",
+			"hdlP\\1Events",
+			"\\hdlEvents",
+			"\\\\return\\1",
+			"\\\\return\\1Emp",
+			"\\\\return\\1Non",
+			"\\\\hdlPop\\1More",
+			"\\\\read\\1H",
+			"\\reqPopL",
+			"\\reqPopR",
+			"\\hdlPopREmp",
+			"\\hdlPopLEmp",
+			"\\hdlPopLMore",
+			"\\hdlPopRMore",
+			"\\hdlPopROne",
+			"\\hdlPopLOne",
+			"\\hdlPushLNon",
+			"\\hdlPushRNon",
+			"\\hdlPushREmp",
+			"\\hdlPushLEmp",
+			"\\hdlPushL",
+			"\\hdlPushR",
+			"\\hdlPopRNon",
+			"\\hdlPopLNon",
+			"t[\\1]",
+			"req_",
+			"subsection",
+			" ",
+			"\\cNonEmpty",
+			"\\cEmpty",
+			"",
+			"pop",
+			"subsection",
+			"\\ovr",
+			"\\1",
+			"\\Req",
+			"\\1",
+			"\\Req",
+			"`\\1",
+			"[ ]",
+			"`\\1",
+			"\\fun",
+			"`\\1",
+			"m4",
+			"\\Addr",
+			"m5",
+			"m6",
+			"more",
+			"one",
+			"pushR:empty",
+			"pushL:empty",
+			"pretty",
+			"pretty lbl",
+			"\"\\1\"",
+			"Lit",
+			"\"\\1\"",
+			"sl$",
+			"HM.",
+			"System.FileSystem",
+			"reactimate",
+			"",
+			"Pre",
+			"FS",
+			"'.",
+			"Seq",
+			"PrState"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 8,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/Control/Monad/Free/STM.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 917,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								145,
+								145
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 267.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/Control/Monad/Free/IO.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 865,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								777,
+								777
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 274.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/Control/Monad/Free/Files.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1957,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1064,
+								1064
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/Control/Monad/Free/Thread.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1035,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								190,
+								190
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 3.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/Pipes/Reactive.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14620,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "src/Pipes/Tick.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 326,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/Control/Monad/Free/Console.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1172,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								155,
+								155
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "reactive-pipes.cabal",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3777,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2606,
+								2606
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Cabal.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/Control/Monad/Free/Exceptions/Class.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1602,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								422,
+								422
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 110.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "src/Control/Monad/Free/STM/Class.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 524,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								100,
+								100
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "src/Control/Monad/Free/Thread/Class.hs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 451,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								146,
+								186
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SublimeHaskell/Syntaxes/Haskell-SublimeHaskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 31.0
+	},
+	"input":
+	{
+		"height": 34.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 290.0
+	},
+	"output.find_results":
+	{
+		"height": 142.0
+	},
+	"output.git":
+	{
+		"height": 148.0
+	},
+	"pinned_build_system": "Packages/User/Haskell (Stack).sublime-build",
+	"project": "reactive-pipes.sublime-project",
+	"replace":
+	{
+		"height": 58.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"src/Control/Monad/Free/Exceptions/Class.hs"
+			],
+			[
+				"test",
+				"suite/Test.hs"
+			],
+			[
+				"stm",
+				"src/Control/Monad/Free/STM.hs"
+			],
+			[
+				"pro",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/src/UnitB/Property.hs"
+			],
+			[
+				"int",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/Logic/Theory/Internals.hs"
+			],
+			[
+				"tex2hs",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/tex2png-hs/.travis.yml"
+			],
+			[
+				"re",
+				"README.md"
+			],
+			[
+				"build",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/build_all.sh"
+			],
+			[
+				"litcab",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-check-dist/literate-unitb.cabal"
+			],
+			[
+				"tr",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/.travis.yml"
+			],
+			[
+				"ver",
+				"~/Documents/Haskell/Literate Unit-B/architecture experiments/dependent-ast/logic/Z3/Version.hs"
+			],
+			[
+				".tr",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/.travis.yml"
+			],
+			[
+				"tra",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/.travis.yml"
+			],
+			[
+				"localcabal",
+				"~/Documents/Haskell/Literate Unit-B/architecture experiments/literate-unitb-logic/literate-unitb-logic.cabal"
+			],
+			[
+				"seria",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/serialize-instances/serialize-instances.cabal"
+			],
+			[
+				"instance",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/bipartite-graph/.stack-work/downloaded/Zte22pB1v5KW/Data/Serialize/Instances.hs"
+			],
+			[
+				"inst",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/serialize-instances/Data/Serialize/Instances.hs"
+			],
+			[
+				"typemap",
+				"~/Documents/Haskell/Literate Unit-B/architecture experiments/type-map/Data/Type/Map.hs"
+			],
+			[
+				"cabal",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/literate-unitb.cabal"
+			],
+			[
+				".tra",
+				"~/Documents/Haskell/Literate Unit-B/architecture experiments/type-map/.travis.yml"
+			],
+			[
+				"type",
+				"~/Documents/Haskell/Literate Unit-B/architecture experiments/type-map/type-map.cabal"
+			],
+			[
+				"typestack",
+				"~/Documents/Haskell/Literate Unit-B/architecture experiments/type-map/stack.yaml"
+			],
+			[
+				"literate-unitb/st",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/stack.yaml"
+			],
+			[
+				"split",
+				"~/Documents/Haskell/Literate Unit-B/architecture experiments/dependent-ast/split_lib.sh"
+			],
+			[
+				"stac",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/stack.yaml"
+			],
+			[
+				"lit",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/literate-unitb.cabal"
+			],
+			[
+				"spl",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/split_lib.bash"
+			],
+			[
+				"bi",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/bipartite-graph/bipartite-graph.cabal"
+			],
+			[
+				"bu",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/build_all.sh"
+			],
+			[
+				"bui",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/build_all.sh"
+			],
+			[
+				"travis",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/.travis.yml"
+			],
+			[
+				"buil",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/build_all.sh"
+			],
+			[
+				"insta",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/generic-instances/GHC/Generics/Instances.hs"
+			],
+			[
+				"util",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-utils/literate-unitb-utils.cabal"
+			],
+			[
+				"uti",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-utils/literate-unitb-utils.cabal"
+			],
+			[
+				"part",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/partial-order/partial-order.cabal"
+			],
+			[
+				"lite",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/literate-unitb-logic.cabal"
+			],
+			[
+				"class",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/classy-lens-hierarchy/classy-lens-hierarchy.cabal"
+			],
+			[
+				"sta",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/stack.yaml"
+			],
+			[
+				"late",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/latex/literate-unitb-latex.cabal"
+			],
+			[
+				"read",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/data-packaged/README.md"
+			],
+			[
+				"logi",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/literate-unitb-logic.cabal"
+			],
+			[
+				"logic",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/literate-unitb-logic.cabal"
+			],
+			[
+				"logictra",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb-logic/.travis.yml"
+			],
+			[
+				"logicstac",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/literate-unitb/logic/stack.yaml"
+			],
+			[
+				"gene",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/generic-instances/stack.yaml"
+			],
+			[
+				"react",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/reactive-banana-transformers/reactive-banana-transformers.cabal"
+			],
+			[
+				"dat",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/data-packaged/data-packaged.cabal"
+			],
+			[
+				"datapac",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/data-packaged/data-packaged.cabal"
+			],
+			[
+				"prett",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/pretty-printable/pretty-printable.cabal"
+			],
+			[
+				"show",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/show-with/show-with.cabal"
+			],
+			[
+				"clas",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/classy-lens-hierarchy/classy-lens-hierarchy.cabal"
+			],
+			[
+				"ex",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/existential/existential.cabal"
+			],
+			[
+				"trav",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/typelist-functor/.travis.yml"
+			],
+			[
+				"fil",
+				"~/Documents/Haskell/Literate Unit-B/GitHub/file-system-mockup/file-system-mockup.cabal"
+			],
+			[
+				"dr",
+				"thesis-draft.tex"
+			],
+			[
+				"m2",
+				"chapters/examples/lock-free-sections/sect6-pop-left/m2.tex"
+			],
+			[
+				"s6",
+				"chapters/examples/lock-free-sections/sect6-pop-left.tex"
+			],
+			[
+				"mach",
+				"chapters/examples/lock-free-deque/machine_m6.tex"
+			],
+			[
+				"s7",
+				"chapters/examples/lock-free-sections/sect7-code.tex"
+			],
+			[
+				"defs",
+				"defs.tex"
+			],
+			[
+				"unity",
+				"sty/unity.sty"
+			],
+			[
+				"live",
+				"appendices/live.tex"
+			],
+			[
+				"calc",
+				"sty/calculation.sty"
+			],
+			[
+				"unitb",
+				"sty/unitb.sty"
+			],
+			[
+				"uni",
+				"sections/unitb.tex"
+			],
+			[
+				"append",
+				"appendices/rules.tex"
+			],
+			[
+				"loc",
+				"chapters/examples/lock-free.tex"
+			],
+			[
+				"even",
+				"sty/eventB.sty"
+			],
+			[
+				"event",
+				"sty/eventB.sty"
+			],
+			[
+				"unit",
+				"sections/unitb.tex"
+			],
+			[
+				"def",
+				"defs.tex"
+			],
+			[
+				"sect3",
+				"chapters/examples/lock-free-sections/sect3-linked-list.tex"
+			],
+			[
+				"sct1",
+				"chapters/examples/lock-free-sections/sect1-liveness.tex"
+			],
+			[
+				"lock-",
+				"chapters/examples/lock-free.tex"
+			],
+			[
+				"toc",
+				"chapters/toc.tex"
+			],
+			[
+				"machm5",
+				"machine_m5.tex"
+			],
+			[
+				"unib",
+				"src/UnitB/UnitB.hs"
+			],
+			[
+				"di",
+				"script/main/Display_errors.hs"
+			],
+			[
+				"unit.cab",
+				"pipes-interactive/literate-unitb.cabal"
+			],
+			[
+				"dis",
+				"script/main/Display_errors.hs"
+			],
+			[
+				"unitb.ca",
+				"pipes-interactive/literate-unitb.cabal"
+			],
+			[
+				"pipespr",
+				"src/Pipes/Prover.hs"
+			],
+			[
+				"prop",
+				"libs/reactive-banana-transformers/Reactive/Banana/Property.hs"
+			],
+			[
+				"tm",
+				"suite/test_tmp.hs"
+			],
+			[
+				"disp",
+				"script/main/display_errors.hs"
+			],
+			[
+				"find",
+				"Find Results"
+			],
+			[
+				"suite",
+				"src/Document/Tests/Suite.hs"
+			],
+			[
+				"summ",
+				"src/Documentation/SummaryGen.hs"
+			],
+			[
+				"test_tm",
+				"suite/test_tmp.hs"
+			],
+			[
+				"zoom",
+				"libs/axiomatic-classes/Test/QuickCheck/ZoomEq.hs"
+			],
+			[
+				"prooftre",
+				"logic/Logic/Proof/ProofTree.hs"
+			],
+			[
+				"parser",
+				"logic/Logic/Expr/Parser/Internal/Parser.hs"
+			],
+			[
+				"pog",
+				"logic/Logic/Proof/POGenerator.hs"
+			],
+			[
+				"unipo.hs",
+				"src/UnitB/PO.hs"
+			],
+			[
+				"po",
+				"src/UnitB/Proof/PO.hs"
+			],
+			[
+				"types",
+				"src/Document/Phase/Types.hs"
+			],
+			[
+				"docu",
+				"src/Document/Document.hs"
+			],
+			[
+				"axi",
+				"libs/axiomatic-classes/Test/QuickCheck/AxiomaticClass.hs"
+			],
+			[
+				"fact",
+				"libs/existential/Data/Factory.hs"
+			],
+			[
+				"lab",
+				"logic/Logic/Expr/Label.hs"
+			],
+			[
+				"suitetest",
+				"suite/Test.hs"
+			],
+			[
+				"machinesp",
+				"src/Document/MachineSpec.hs"
+			],
+			[
+				"zoomeq",
+				"libs/axiomatic-classes/Test/QuickCheck/ZoomEq.hs"
+			],
+			[
+				"eve",
+				"src/UnitB/Event.hs"
+			],
+			[
+				"exi",
+				"test-commit/libs/existential/existential.cabal"
+			],
+			[
+				"zoo",
+				"libs/axiomatic-classes/Test/QuickCheck/ZoomEq.hs"
+			],
+			[
+				"bip",
+				"libs/bipartite-graph/Data/Graph/Bipartite.hs"
+			],
+			[
+				"instances",
+				"libs/generic-instances/GHC/Generics/Instances.hs"
+			],
+			[
+				"proofrule",
+				"src/UnitB/Proof/Rules.hs"
+			],
+			[
+				"exist",
+				"libs/existential/Data/Existential.hs"
+			],
+			[
+				"mac",
+				"src/UnitB/Machine.hs"
+			],
+			[
+				"cont",
+				"logic/Logic/Expr/Context.hs"
+			],
+			[
+				"inv",
+				"test-commit/libs/invariants/invariants.cabal"
+			],
+			[
+				"syn",
+				"utils/Utilities/Syntactic.hs"
+			],
+			[
+				"zo",
+				"libs/axiomatic-classes/Test/QuickCheck/ZoomEq.hs"
+			],
+			[
+				"machspec",
+				"src/Document/MachineSpec.hs"
+			],
+			[
+				"report",
+				"libs/axiomatic-classes/Test/QuickCheck/Report.hs"
+			],
+			[
+				"stest",
+				"suite/Test.hs"
+			],
+			[
+				"sco",
+				"src/Document/Scope.hs"
+			],
+			[
+				"quant",
+				"logic/Logic/Expr/Quantifier.hs"
+			],
+			[
+				"fun",
+				"logic/Logic/Expr/Fun.hs"
+			],
+			[
+				"exex",
+				"logic/Logic/Expr/Expr.hs"
+			],
+			[
+				"print",
+				"logic/Logic/Expr/Printable.hs"
+			],
+			[
+				"inter",
+				"logic/Logic/Names/Internals.hs"
+			],
+			[
+				"vari",
+				"logic/Logic/Expr/Variable.hs"
+			],
+			[
+				"sc",
+				"src/Document/Scope.hs"
+			],
+			[
+				"label",
+				"logic/Logic/Expr/Label.hs"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"/Users/Simon/Dropbox/UnitB/Haskell 2/skell 2/literate-unitb-other/literate-unitb.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 367.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Valid",
+				"Validity"
+			],
+			[
+				"ProgId",
+				"ProgId"
+			],
+			[
+				"PipeLine",
+				"Pipeline"
+			],
+			[
+				"MachinePO",
+				"MachinePO'"
+			],
+			[
+				"GenSe",
+				"GenSequent"
+			],
+			[
+				"SkipEve",
+				"SkipEventId"
+			],
+			[
+				"traverseEd",
+				"traverseEdges"
+			],
+			[
+				"travedge",
+				"traverseEdges"
+			],
+			[
+				"D",
+				"Decl"
+			],
+			[
+				"read2",
+				"read2Cells1With"
+			],
+			[
+				"prooftree",
+				"ProofTree"
+			],
+			[
+				"Rel",
+				"Rel"
+			],
+			[
+				"syntac",
+				"SyntacticProp"
+			],
+			[
+				"notat",
+				"Notation"
+			],
+			[
+				"theory",
+				"Theory"
+			],
+			[
+				"labe",
+				"Label"
+			],
+			[
+				"bino",
+				"BinOperator"
+			],
+			[
+				"proofbase",
+				"ProofBase"
+			],
+			[
+				"EvtScope",
+				"EvtScope"
+			],
+			[
+				"declS",
+				"DeclSource"
+			],
+			[
+				"AbsDef",
+				"AbsDef"
+			],
+			[
+				"lineIn",
+				"LineInfo"
+			],
+			[
+				"uncurr",
+				"uncurried'"
+			],
+			[
+				"rawMach",
+				"RawMachine"
+			],
+			[
+				"MachinePO'",
+				"MachinePO'"
+			],
+			[
+				"nota",
+				"Notation"
+			],
+			[
+				"Tokens",
+				"Tokens"
+			],
+			[
+				"inductive",
+				"inductive"
+			],
+			[
+				"eventId",
+				"EventId"
+			],
+			[
+				"runSeq",
+				"runSequent"
+			],
+			[
+				"printQ",
+				"printQuickCheckResult"
+			],
+			[
+				"symbol_t",
+				"symbol_table'"
+			],
+			[
+				"make_all",
+				"make_all_tables"
+			],
+			[
+				"quickW",
+				"quickCheckWrap"
+			],
+			[
+				"axiom_Scope_clashesOverMerge",
+				"axiom_Scope_clashesOverMerge"
+			],
+			[
+				"prop_file_io",
+				"prop_file_io"
+			],
+			[
+				"makeTest",
+				"makeTestSuite"
+			],
+			[
+				"run_test",
+				"run_test"
+			],
+			[
+				"quick",
+				"quickCheckClasses"
+			],
+			[
+				"cycles",
+				"cycles"
+			],
+			[
+				"interpretFS",
+				"interpretFSMomentT"
+			],
+			[
+				"makeRe",
+				"makeReport"
+			],
+			[
+				"report",
+				"test_report"
+			],
+			[
+				"from",
+				"fromFuture"
+			],
+			[
+				"accum",
+				"accumEventIO"
+			],
+			[
+				"systemfile",
+				"systemFileFormat"
+			],
+			[
+				"parse_s",
+				"parse_system"
+			],
+			[
+				"liftFS",
+				"liftFS"
+			],
+			[
+				"withFi",
+				"withFile"
+			],
+			[
+				"fromRight",
+				"fromRight'"
+			],
+			[
+				"showWit",
+				"showWith"
+			],
+			[
+				"interse",
+				"intersection"
+			],
+			[
+				"makeRec",
+				"makeRecordConstr"
+			],
+			[
+				"readerEve",
+				"readerEvent"
+			],
+			[
+				"convertEve",
+				"convertEventList"
+			],
+			[
+				"interpret",
+				"interpret'"
+			],
+			[
+				"inter",
+				"interpret"
+			],
+			[
+				"readFor",
+				"readFormat'"
+			],
+			[
+				"withFile",
+				"withFile"
+			],
+			[
+				"args",
+				"args"
+			],
+			[
+				"compile_a",
+				"compile_app"
+			],
+			[
+				"withF",
+				"withFile"
+			],
+			[
+				"display",
+				"display"
+			],
+			[
+				"splitting",
+				"splittingEvents'"
+			],
+			[
+				"asType",
+				"asTypeList'"
+			],
+			[
+				"mockFs",
+				"MockFileSystem"
+			],
+			[
+				"split",
+				"splittingEvents"
+			],
+			[
+				"satis",
+				"satisfies"
+			],
+			[
+				"byRel",
+				"byRel"
+			],
+			[
+				"fromFut",
+				"fromFuture"
+			],
+			[
+				"exec",
+				"execMockFileSystem"
+			],
+			[
+				"unlines",
+				"unlines"
+			],
+			[
+				"disp",
+				"disp"
+			],
+			[
+				"fromBoo",
+				"fromBool"
+			],
+			[
+				"constantun",
+				"constantUnlessB"
+			],
+			[
+				"eventPair",
+				"eventPair"
+			],
+			[
+				"unions",
+				"unionsM"
+			],
+			[
+				"eventPai",
+				"eventPair"
+			],
+			[
+				"intfa",
+				"interpretFrameworks'"
+			],
+			[
+				"jobbatchimp",
+				"jobBatchImpl'"
+			],
+			[
+				"job",
+				"jobBatch'"
+			],
+			[
+				"change",
+				"changePairD"
+			],
+			[
+				"provided",
+				"providedMessage'"
+			],
+			[
+				"checkAS",
+				"checkAssertM"
+			],
+			[
+				"invar",
+				"invariant'"
+			],
+			[
+				"prover",
+				"prover"
+			],
+			[
+				"providedM",
+				"providedM"
+			],
+			[
+				"withfi",
+				"withFile"
+			],
+			[
+				"raw",
+				"raw"
+			],
+			[
+				"result21",
+				"result21"
+			],
+			[
+				"clash",
+				"clash"
+			],
+			[
+				"parseEvt",
+				"parseEvtExpr'"
+			],
+			[
+				"liftP",
+				"liftP'"
+			],
+			[
+				"upgradeM",
+				"upgradeM"
+			],
+			[
+				"unfai",
+				"unfail"
+			],
+			[
+				"unfa",
+				"unfail"
+			],
+			[
+				"run_p",
+				"run_phase"
+			],
+			[
+				"monoto",
+				"apply_monotonicity"
+			],
+			[
+				"traverseVal",
+				"traverseValidation"
+			],
+			[
+				"parse_sy",
+				"parse_system"
+			],
+			[
+				"list_file",
+				"list_file_obligations'"
+			],
+			[
+				"verify",
+				"verify"
+			],
+			[
+				"proof",
+				"proof_obligation"
+			],
+			[
+				"dump_",
+				"dump_pos"
+			],
+			[
+				"zele",
+				"zelem"
+			],
+			[
+				"machin",
+				"machineCmd"
+			],
+			[
+				"run_ph",
+				"run_phase"
+			],
+			[
+				"runPi",
+				"runPipeline'"
+			],
+			[
+				"zeq",
+				"zeq"
+			],
+			[
+				"ba_pre",
+				"ba_predicate'"
+			],
+			[
+				"seqFile",
+				"seqFileFormat"
+			],
+			[
+				"str_v",
+				"str_verify_machine"
+			],
+			[
+				"defaul",
+				"default_timeout"
+			],
+			[
+				"emit_",
+				"emit_goal"
+			],
+			[
+				"newMa",
+				"newMachine"
+			],
+			[
+				"assertFa",
+				"assertFalse'"
+			],
+			[
+				"proof_ob",
+				"proof_obligation"
+			],
+			[
+				"seqFi",
+				"seqFileFormat'"
+			],
+			[
+				"modify",
+				"modify_obs"
+			],
+			[
+				"veri",
+				"verify_all"
+			],
+			[
+				"profile",
+				"profile_app"
+			],
+			[
+				"z3_c",
+				"z3_code"
+			],
+			[
+				"dump",
+				"dump"
+			],
+			[
+				"find_err",
+				"find_errors"
+			],
+			[
+				"execMoc",
+				"execMockFileSystem"
+			],
+			[
+				"error_i",
+				"error_item"
+			],
+			[
+				"pevem",
+				"pEventMerge"
+			],
+			[
+				"peventS",
+				"pEventSplit"
+			]
+		],
+		"width": 467.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 292.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
