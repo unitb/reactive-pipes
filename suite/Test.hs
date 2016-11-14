@@ -3,6 +3,7 @@ module Main where
 
 import Control.Applicative
 import Control.Concurrent (threadDelay)
+import Control.Concurrent.STM
 import Control.Exception.Lens
 -- import Control.Concurrent.Async
 import Control.Lens hiding (each)
@@ -51,7 +52,7 @@ import Text.Printf.TH
 
 foo :: ReactPipe s r ()
 foo = do
-         e0 <- spawnSourceWith_ (retries 2) $ P.zipWith const 
+         e0 <- spawnSource_ $ restart (retries 2) $ P.zipWith const 
                 (each [1..6] >-> P.mapM (liftA2 (>>) [sP|send: %d|] return)) 
                 (tick 1000000)
          -- >-> P.map (const ()) >-> numbers 0
@@ -95,6 +96,19 @@ foo3 = mdo
                 , set _3 . snd <$> e2 ]
         finalize $ [sP|Outcome: %?|] <$> v
 
+foo5 :: ReactPipe s String ()
+foo5 = do
+        e0 <- spawnSource_ $ onTick 100000 (each [1..30])
+        (pop,q) <- autonomous [] ((:) <$> e0) $ maybe retry return . uncons
+        e1 <- pipePool pop $ do
+            forM_ [1..2] $ \i -> do
+                worker $ P.mapM $ \x -> do
+                    threadDelay 2000000
+                    return (i,x)
+        reactimate $ [sP|+ Queue: %?; Dequeue: %d|] <$> q <@> pop
+        reactimate $ [sP|- Processed: %?|] <$> e1
+        reactimate $ [sP|Queue: %?; Adding %d|] <$> q <@> e0
+
 foo4 :: ReactPipe s String ()
 foo4 = do
         e0 <- spawnSource_ $ onTick 750000 (each [1..10])
@@ -108,7 +122,7 @@ foo4 = do
 
 foo2 :: ReactPipe s r ()
 foo2 = do
-         e0 <- spawnSourceWith (retries 2) $ P.zipWith const 
+         e0 <- spawnSource $ restart (retries 2) $ P.zipWith const 
                 (each [1..3]) 
                 (tick 1000000) >> fail "foo"
          -- >-> P.map (const ()) >-> numbers 0
@@ -143,7 +157,7 @@ foo2 = do
 
 main :: IO ()
 main = do
-    x <- trying id $ runReactive foo4
+    x <- trying id $ runReactive foo5
     print x
     threadDelay 3000000
     -- foo3

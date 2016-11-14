@@ -11,10 +11,11 @@ import Control.Lens hiding ((...))
 import Control.Monad.Catch hiding (onException,finally)
 import Control.Monad.Free
 import Control.Monad.RWS
+import Control.Monad.State
 
 import Data.Bifunctor
 import Data.Either
-import Data.List.NonEmpty hiding (zipWith)
+import Data.List.NonEmpty hiding (length,zipWith)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Monoid.Monad
@@ -45,9 +46,10 @@ data ReactHandle s r =
 
 makePrisms ''ReactHandle
 
-mySpawn :: IO (Output' a,Input a)
-mySpawn = do
-    let n = 1
+mySpawn :: State ChannelLength z
+        -> IO (Output' a,Input a)
+mySpawn opt = do
+    let (ChannelLength n) = execState opt $ ChannelLength 10
     writers <- newTVarIO 0
     let _ = writers :: TVar Int
     (out,input,_seal) <- spawn' $ bounded n
@@ -76,13 +78,11 @@ splitHandles = foldMap $ \case
             Result e -> ([],[],[],[e],[])
             Finalizer final -> ([],[],[],[],[final])
 
-newThread :: Show a
-          => Restart a
-          -> IO (Effect (SafeT IO) ()) 
+newThread :: IO (Effect (SafeT IO) ()) 
           -> M s r ()
-newThread n t = tell [Thread $ onException' 
+newThread t = tell [Thread $ onException' 
                         (filtered $ isn't _ThreadKilled) 
-                        (liftIO . [sP|failed because of: %?|]) . restart n <$> t]
+                        (liftIO . [sP|failed because of: %?|]) <$> t]
 
 onException' :: MonadCatch m
              => Prism' SomeException e
@@ -91,15 +91,16 @@ onException' :: MonadCatch m
              -> m a
 onException' pr f = handleJust (preview pr) (liftA2 (>>) f $ throwM . review pr)
 
-liftSTMLater :: STM () -> M s r ()
-liftSTMLater cmd = tell [Init cmd]
 
-readEvent :: Event s a -> M s r (Producer a (SafeT IO) ())
-readEvent Never = return $ return ()
-readEvent (Event f _) = do
-        (out,input) <- lift mySpawn
-        liftSTMLater $ registerSet f out
-        return $ fromInput input
+readEvent :: State ChannelLength z
+          -> Event s a 
+          -> M s r (Producer a (SafeT IO) ())
+readEvent opt e = do
+        (out,input) <- lift $ mySpawn opt
+        writer $ case e of
+                Never -> (return (),[])
+                Event f _ -> 
+                    (fromInput input, [Init $ registerSet f out])
 
 conditional :: (a -> STM (Maybe b))
             -> Output b -> Output a
@@ -112,9 +113,10 @@ registerSet :: ChannelSet s a -> Output' a -> STM ()
 registerSet (ChannelSet m) = forM_ m . flip register
 
 reactimateSTM :: Event s (STM ()) -> M s r ()
-reactimateSTM Never = return ()
-reactimateSTM (Event _ f) = do
-        liftSTMLater $ registerSet f $ Output' $ return (Output (True <$),return ())
+reactimateSTM e = do
+        tell $ case e of
+                Never -> []
+                Event _ f -> [Init $ registerSet f $ Output' $ return (Output (True <$),return ())]
 
 allocate :: (Enum a,Monad m,Monoid w) 
          => Lens' s a -> RWST r w s m a
@@ -139,15 +141,13 @@ withChannel (Output' cmd) f = do
         prog <- f out
         return $ prog `finally` liftIO (atomically final)
 
-makeEvent :: Show e
-          => Restart e
-          -> NonEmpty (Producer a (SafeT IO) ())
+makeEvent :: NonEmpty (Producer a (SafeT IO) ())
           -> M s r (Event s a)
-makeEvent n sources = do
+makeEvent sources = do
         es <- forM sources $ \s -> do
           (v,getV) <- makeChannel
           (u,getU) <- makeChannel
-          newThread n $ atomically $
+          newThread $ atomically $
                 withChannel getV $ \out -> 
                 withChannel getU $ \upd -> 
                     return $ s >-> toOutput (out <> upd)
@@ -158,20 +158,20 @@ makeEvent n sources = do
     --  put the Map as part of channels
     --  add SendId to events too?
 
-runReactive' :: ReactPipe s r a -> M s r a
+runReactive' :: Free (ReactiveF s r) a -> M s r a
 runReactive' (Pure x) = return x
-runReactive' (Free (Source n source f)) = do
-        e <- makeEvent n source
+runReactive' (Free (Source _ source f)) = do
+        e <- makeEvent source
         runReactive' $ f e
 runReactive' (Free (Transform n pipe e f)) = do
-        input <- readEvent e
-        e' <- makeEvent n $ (input >->) <$> pipe
+        input <- readEvent n e
+        e' <- makeEvent $ (input >->) <$> pipe
         runReactive' $ f e'
 runReactive' (Free (Sink n sinks e cmd)) = do
-        input <- readEvent e
+        input <- readEvent n e
         forM_ sinks $ \s ->
-          newThread n $ return $ input >-> s
-        runReactive' cmd
+          newThread $ return $ input >-> s
+        runReactive' cmd 
 runReactive' (Free (MkBehavior x e f)) = do
         ref <- liftIO $ newTVarIO x
         reactimateSTM $ modifyTVar ref <$> e
@@ -180,6 +180,9 @@ runReactive' (Free (AccumEvent x e f)) = do
         ref <- liftIO $ newTVarIO x
         reactimateSTM $ modifyTVar ref <$> e
         runReactive' $ f (Behavior (readTVar ref) <@ e)
+runReactive' (Free (MFix e f)) = do
+        mfix (runReactive' . e)
+            >>= runReactive' . f
 runReactive' (Free (Reactimate e f)) = do
         tell [ReactEvent e]
         runReactive' f
@@ -200,8 +203,11 @@ data Machine r = Machine (STM r) [Effect (SafeT IO) ()] (STM (IO ()))
 unwrapBehavior :: Behavior s a -> STM a
 unwrapBehavior (Behavior v) = v
 
+unwrapReactPipe :: ReactPipe s r a -> Free (ReactiveF s r) a
+unwrapReactPipe (ReactPipe cmd) = cmd
+
 compile :: (forall s. ReactPipe s r a) -> IO (a,Machine r)
-compile pipe = do 
+compile (ReactPipe pipe) = do 
         ((r,x),_,(ts,is,_react,_return,final)) <- (_3 %~ splitHandles) <$> runRWST 
                 (do (x,(_,_,react,ret,_final)) <- listens 
                             splitHandles 
@@ -212,7 +218,7 @@ compile pipe = do
                         Never  -> return ()
                         react' -> do
                             runReactive' 
-                                $ spawnSink 
+                                $ unwrapReactPipe $ spawnSink 
                                       react' 
                                       (for cat lift)
                     return (takeTMVar r,x) ) 
@@ -230,6 +236,7 @@ runMachine (Machine res ts' final) = do
         let wrapup r = do
                 mapM_ cancel <=< atomically . readTVar $ r
                 join $ atomically final
+        [sP| Threads: %d |] $ length ts'
         bracket (newTVarIO []) 
           wrapup
           (\r -> do

@@ -18,6 +18,7 @@ import Control.Lens
 import Control.Monad.Catch hiding (onException)
 import Control.Monad.Free
 import Control.Monad.RWS
+import Control.Monad.State
 import Control.Monad.Writer
 
 import Data.Functor.Apply
@@ -36,14 +37,16 @@ import Prelude hiding ((.),id)
 
 import Unsafe.Coerce
 
+newtype ChannelLength = ChannelLength Int
+
 data ReactiveF s r a = 
-        forall b e. Show e => Source (Restart e) 
+        forall b. Source (State ChannelLength ())
               (NonEmpty (Producer b (SafeT IO) ())) 
               (Event s b -> a)
-        | forall b e. Show e => Sink (Restart e) 
+        | forall b. Sink (State ChannelLength ())
               (NonEmpty (Consumer b (SafeT IO) ())) 
               (Event s b) a
-        | forall e i o. Show e => Transform (Restart e)  
+        | forall i o. Transform (State ChannelLength ())
               (NonEmpty (Pipe i o (SafeT IO) ())) 
               (Event s i) 
               (Event s o -> a)
@@ -51,28 +54,36 @@ data ReactiveF s r a =
         | forall b. AccumEvent b (Event s (b -> b)) (Event s b -> a)
         | Reactimate (Event s (IO ())) a
         | ReactimateSTM (Event s (STM ())) a
+        | forall b. MFix (b -> Free (ReactiveF s r) b) (b -> a)
         | LiftIO (IO a)
         | Return (Event s r) a
         | Finalize (Behavior s (IO ())) a
 
 instance MonadIO (ReactPipe s r) where
-    liftIO cmd = Free (LiftIO $ Pure <$> cmd)
+    liftIO cmd = ReactPipe $ Free (LiftIO $ Pure <$> cmd)
 
 instance Functor (ReactiveF s r) where
     fmap f (Source n s g) = Source n s $ f . g
     fmap f (Sink n s e g) = Sink n s e $ f g
-    fmap f (Transform n s e g) = Transform n s e $ f . g
+    fmap f (Transform n s e g) = Transform  n s e $ f . g
     fmap f (MkBehavior s e g)  = MkBehavior s e $ f . g
     fmap f (Reactimate e g)    = Reactimate e $ f g
     fmap f (ReactimateSTM e g) = ReactimateSTM e $ f g
     fmap f (AccumEvent x e g)  = AccumEvent x e $ f . g
     fmap f (LiftIO x)          = LiftIO $ f <$> x
+    fmap f (MFix x g)          = MFix x $ f . g
     fmap f (Return x g)        = Return x $ f g
     fmap f (Finalize x g)      = Finalize x $ f g
 
+instance MonadFix (ReactPipe s r) where
+    mfix f = ReactPipe $ Free $ MFix (runReact . f) Pure
+        where 
+          runReact (ReactPipe m) = m
+
 data Restart a = Restart Int (Prism' SomeException a)
 
-type ReactPipe s r = Free (ReactiveF s r)
+newtype ReactPipe s r a = ReactPipe (Free (ReactiveF s r) a)
+    deriving (Functor,Applicative,Monad)
 
 newtype SenderId = SenderId Int
     deriving (Enum,Eq,Ord)
@@ -99,6 +110,9 @@ instance Functor (Channel s) where
     fmap f (Channel b g) = Channel b $ (mapped.mapped %~ f) . g
 
 newtype Output' a = Output' (STM (Output a,STM ()))
+
+chanLen :: Lens' ChannelLength Int
+chanLen f (ChannelLength n) = ChannelLength <$> f n
 
 switchB :: Behavior s a
         -> Event s (Behavior s a) 
@@ -171,11 +185,11 @@ apply (Behavior f) (Event out g) = Event (applyCS f out) (applyCS f g)
 
 result :: Event s r
        -> ReactPipe s r ()
-result e = Free $ Return e $ Pure ()
+result e = ReactPipe $ Free $ Return e $ Pure ()
 
 finalize :: Behavior s (IO ()) 
          -> ReactPipe s r ()
-finalize final = Free $ Finalize final $ Pure ()
+finalize final = ReactPipe $ Free $ Finalize final $ Pure ()
 
 resource :: IO x
          -> (x -> IO ())
@@ -187,45 +201,42 @@ resource alloc free = do
 
 spawnSource :: Producer a IO r 
             -> ReactPipe s r (Event s a)
-spawnSource = spawnSourceWith $ retries 0
+spawnSource = spawnSourceWith $ return ()
 
 spawnSource_ :: Producer a IO ()
              -> ReactPipe s r (Event s a)
-spawnSource_ = spawnSourceWith_ $ retries 0
+spawnSource_ = spawnSourceWith_ $ return ()
 
-spawnSourceWith :: Show k
-                => Restart k
+spawnSourceWith :: State ChannelLength z
                 -> Producer a IO r 
                 -> ReactPipe s r (Event s a)
 spawnSourceWith n source = sourcePoolWith n $ worker source
 
-spawnSourceWith_ :: Show k
-                 => Restart k
+spawnSourceWith_ :: State ChannelLength z
                  -> Producer a IO ()
                  -> ReactPipe s r (Event s a)
 spawnSourceWith_ n source = sourcePoolWith_ n $ worker source
 
 sourcePool :: SourcePool a r ()
            -> ReactPipe s r (Event s a)
-sourcePool = sourcePoolWith (retries 0)
+sourcePool = sourcePoolWith $ return ()
 
-sourcePoolWith_ :: Show k
-                => Restart k
+sourcePoolWith_ :: State ChannelLength z
                 -> SourcePool a () ()
                 -> ReactPipe s r (Event s a)
-sourcePoolWith_ n source = case nonEmpty $ execWriter source of
-                              Just xs -> Free (Source n (f <$> xs) Pure)
+sourcePoolWith_ n source = ReactPipe $ case nonEmpty $ execWriter source of
+                              Just xs -> Free (Source (() <$ n) (f <$> xs) Pure)
                               Nothing -> Pure Never
     where
         f = hoist lift
 
-sourcePoolWith :: Show k
-               => Restart k
+sourcePoolWith :: State ChannelLength z
                -> SourcePool a r ()
                -> ReactPipe s r (Event s a)
 sourcePoolWith n source = case nonEmpty $ execWriter source of
-                              Just xs -> Free (Source n (f <$> xs) $ uncurry split . splitEvent)
-                              Nothing -> Pure Never
+                              Just xs -> ReactPipe (Free $ Source (() <$ n) (f <$> xs) Pure) 
+                                            >>= uncurry split . splitEvent
+                              Nothing -> ReactPipe $ Pure Never
     where
         f x = hoist lift x >-> P.map Right >>= yield . Left
         split x y = result x >> return y
@@ -237,76 +248,71 @@ worker = tell . pure
 spawnSink :: Event s a 
           -> Consumer a IO r 
           -> ReactPipe s r ()
-spawnSink = spawnSinkWith $ retries 0
+spawnSink = spawnSinkWith $ return ()
 
 spawnSink_ :: Event s a 
            -> Consumer a IO () 
            -> ReactPipe s r ()
-spawnSink_ = spawnSinkWith_ $ retries 0
+spawnSink_ = spawnSinkWith_ $ return ()
 
-spawnSinkWith :: Show k
-              => Restart k
+spawnSinkWith :: State ChannelLength z
               -> Event s a 
               -> Consumer a IO r 
               -> ReactPipe s r ()
 spawnSinkWith n e = sinkPoolWith n e . worker
 
-spawnSinkWith_ :: Show k
-               => Restart k
+spawnSinkWith_ :: State ChannelLength z
                -> Event s a 
                -> Consumer a IO () 
                -> ReactPipe s r ()
 spawnSinkWith_ n e = sinkPoolWith_ n e . worker
 
-sinkPoolWith :: Show k
-             => Restart k
+sinkPoolWith :: State ChannelLength z
              -> Event s a 
              -> SinkPool a r () 
              -> ReactPipe s r ()
 sinkPoolWith n e sinks = case nonEmpty $ execWriter sinks of
-                            Just xs -> Free (Transform n (f <$> xs) e result)
-                            Nothing -> Pure ()
+                            Just xs -> ReactPipe (Free $ Transform (() <$ n) (f <$> xs) e Pure)
+                                          >>= result
+                            Nothing -> ReactPipe $ Pure ()
     where
         f x = hoist lift x >-> P.map closed >>= yield
 
-sinkPoolWith_ :: Show k
-              => Restart k
+sinkPoolWith_ :: State ChannelLength z
               -> Event s a 
               -> SinkPool a () () 
               -> ReactPipe s r ()
-sinkPoolWith_ n e sinks = case nonEmpty $ execWriter sinks of
-                            Just xs -> Free (Sink n (hoist lift <$> xs) e $ Pure ())
+sinkPoolWith_ n e sinks = ReactPipe $ case nonEmpty $ execWriter sinks of
+                            Just xs -> Free (Sink (() <$ n) (hoist lift <$> xs) e $ Pure ())
                             Nothing -> Pure ()
 
 sinkPool :: Event s a 
          -> SinkPool a r () 
          -> ReactPipe s r ()
-sinkPool = sinkPoolWith (retries 0)
+sinkPool = sinkPoolWith $ return ()
 
 sinkPool_ :: Event s a 
           -> SinkPool a () () 
           -> ReactPipe s r ()
-sinkPool_ = sinkPoolWith_ (retries 0)
+sinkPool_ = sinkPoolWith_ $ return ()
 
 spawnPipe :: Event s a 
           -> Pipe a b IO r
           -> ReactPipe s r (Event s b)
-spawnPipe = spawnPipeWith $ retries 0
+spawnPipe = spawnPipeWith $ return ()
 
 spawnPipe_ :: Event s a 
            -> Pipe a b IO ()
            -> ReactPipe s r (Event s b)
-spawnPipe_ = spawnPipeWith_ $ retries 0
+spawnPipe_ = spawnPipeWith_ $ return ()
 
-spawnPipeWith :: Show k
-              => Restart k
+spawnPipeWith :: State ChannelLength z
               -> Event s a 
               -> Pipe a b IO r
               -> ReactPipe s r (Event s b)
 spawnPipeWith n e = pipePoolWith n e . worker
 
-spawnPipeWith_ :: Show k
-               => Restart k
+spawnPipeWith_ :: State ChannelLength z
                -> Event s a 
                -> Pipe a b IO ()
                -> ReactPipe s r (Event s b)
@@ -315,32 +321,31 @@ spawnPipeWith_ n e = pipePoolWith_ n e . worker
 pipePool :: Event s a 
          -> PipePool a b r ()
          -> ReactPipe s r (Event s b)
-pipePool = pipePoolWith $ retries 0
+pipePool = pipePoolWith $ return ()
 
 pipePool_ :: Event s a 
           -> PipePool a b () ()
           -> ReactPipe s r (Event s b)
-pipePool_ = pipePoolWith_ $ retries 0
+pipePool_ = pipePoolWith_ $ return ()
 
-pipePoolWith :: Show k
-             => Restart k
+pipePoolWith :: State ChannelLength z
              -> Event s a 
              -> PipePool a b r ()
              -> ReactPipe s r (Event s b)
 pipePoolWith n e pipes = case nonEmpty $ execWriter pipes of
-        Just xs -> Free (Transform n (f <$> xs) e $ uncurry split . splitEvent)
-        Nothing -> Pure Never
+        Just xs ->  ReactPipe (Free $ Transform (() <$ n) (f <$> xs) e Pure)
+                      >>= uncurry split . splitEvent
+        Nothing -> ReactPipe $ Pure Never
     where
         f x = hoist lift x >-> P.map Right >>= yield . Left
         split x y = result x >> return y
 
-pipePoolWith_ :: Show k
-              => Restart k
+pipePoolWith_ :: State ChannelLength z
               -> Event s a 
               -> PipePool a b () ()
               -> ReactPipe s r (Event s b)
-pipePoolWith_ n e pipes = case nonEmpty $ execWriter pipes of
-        Just xs -> Free (Transform n (hoist lift <$> xs) e Pure)
+pipePoolWith_ n e pipes = ReactPipe $ case nonEmpty $ execWriter pipes of
+        Just xs -> Free (Transform (() <$ n) (hoist lift <$> xs) e Pure)
         Nothing -> Pure Never
 
 retriesOnly :: Int -> Prism' SomeException a -> Restart a
@@ -353,9 +358,16 @@ autonomous :: a
            -> Event s (a -> a) 
            -> (a -> STM (b,a))
            -> ReactPipe s r (Event s b,Behavior s a)
-autonomous x e f = do
-        ref <- Free $ MkBehavior x e Pure
-        e' <- spawnSource $ forever $ do
+autonomous = autonomousWith $ return ()
+
+autonomousWith :: State ChannelLength z 
+               -> a 
+               -> Event s (a -> a) 
+               -> (a -> STM (b,a))
+               -> ReactPipe s r (Event s b,Behavior s a)
+autonomousWith opt x e f = do
+        ref <- ReactPipe $ Free $ MkBehavior x e Pure
+        e' <- spawnSourceWith opt $ forever $ do
                 y <- lift $ atomically $ do
                     (e',x') <- f =<< readTVar ref
                     writeTVar ref x'
@@ -365,15 +377,15 @@ autonomous x e f = do
 
 accumB :: a -> Event s (a -> a)
        -> ReactPipe s r (Behavior s a)
-accumB x e = Free $ MkBehavior x e (Pure . Behavior . readTVar)
+accumB x e = ReactPipe $ Free $ MkBehavior x e (Pure . Behavior . readTVar)
 
 accumE :: a -> Event s (a -> a)
        -> ReactPipe s r (Event s a)
-accumE x e = Free $ AccumEvent x e Pure
+accumE x e = ReactPipe $ Free $ AccumEvent x e Pure
 
 reactimate :: Event s (IO ())
            -> ReactPipe s r ()
-reactimate e = Free $ Reactimate e $ Pure ()
+reactimate e = ReactPipe $ Free $ Reactimate e $ Pure ()
 
 unionsWith :: Foldable f
            => (a -> a -> a)
@@ -488,5 +500,5 @@ restart r@(Restart n pr) eff
                     Right res -> return res
 
 reactimateSTM :: Event s (STM ()) -> ReactPipe s r ()
-reactimateSTM e = Free $ ReactimateSTM e $ Pure ()
+reactimateSTM e = ReactPipe $ Free $ ReactimateSTM e $ Pure ()
 

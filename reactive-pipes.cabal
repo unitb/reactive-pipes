@@ -52,9 +52,11 @@ source-repository head
 library
   -- Modules exported by the library.
   exposed-modules:     
+                    Pipes.FileWatcher
                     Pipes.Reactive
                     Pipes.Reactive.Async
                     Pipes.Reactive.Category
+                    Pipes.Reactive.Discrete
                     Pipes.Reactive.Dynamic
                     Pipes.Reactive.Interpreter
                     Pipes.Reactive.Socket
@@ -110,51 +112,52 @@ executable test
   default-extensions: TypeOperators
   build-depends:    base >= 4.8 && < 5
                   , array
+                  , async
                   , either
                   , cereal
                   , lens
                   , pipes
                   , pipes-safe
                   , reactive-pipes
+                  , stm
                   , th-printf
-                  , async
   default-language:    Haskell2010
   ghc-options: -threaded
 
-executable test-server
-  hs-source-dirs:      suite
-  main-is: Server.hs
-  default-extensions: TypeOperators
-  build-depends:    base >= 4.8 && < 5
-                  , either
-                  , cereal
-                  , pipes
-                  , network
-                  , pipes-safe
-                  , reactive-pipes
-                  , th-printf
-                  , async
-  default-language:    Haskell2010
-  ghc-options: -threaded
+-- executable test-server
+--   hs-source-dirs:      suite
+--   main-is: Server.hs
+--   default-extensions: TypeOperators
+--   build-depends:    base >= 4.8 && < 5
+--                   , either
+--                   , cereal
+--                   , pipes
+--                   , network
+--                   , pipes-safe
+--                   , reactive-pipes
+--                   , th-printf
+--                   , async
+--   default-language:    Haskell2010
+--   ghc-options: -threaded
 
-executable test-client
-  hs-source-dirs:      suite
-  main-is: Client.hs
-  default-extensions: TypeOperators
-  build-depends:    base >= 4.8 && < 5
-                  , binary
-                  , bytestring
-                  , cereal
-                  , either
-                  , exceptions
-                  , pipes
-                  , network
-                  , pipes-safe
-                  , reactive-pipes
-                  , th-printf
-                  , async
-  default-language:    Haskell2010
-  ghc-options: -threaded
+-- executable test-client
+--   hs-source-dirs:      suite
+--   main-is: Client.hs
+--   default-extensions: TypeOperators
+--   build-depends:    base >= 4.8 && < 5
+--                   , binary
+--                   , bytestring
+--                   , cereal
+--                   , either
+--                   , exceptions
+--                   , pipes
+--                   , network
+--                   , pipes-safe
+--                   , reactive-pipes
+--                   , th-printf
+--                   , async
+--   default-language:    Haskell2010
+--   ghc-options: -threaded
 
 test-suite test-suite
   hs-source-dirs:      suite
