@@ -63,9 +63,9 @@ instance MonadIO (ReactPipe s r) where
     liftIO cmd = ReactPipe $ Free (LiftIO $ Pure <$> cmd)
 
 instance Functor (ReactiveF s r) where
-    fmap f (Source n s g) = Source n s $ f . g
-    fmap f (Sink n s e g) = Sink n s e $ f g
-    fmap f (Transform n s e g) = Transform  n s e $ f . g
+    fmap f (Source opt s g)    = Source opt s $ f . g
+    fmap f (Sink opt s e g)    = Sink opt s e $ f g
+    fmap f (Transform opt s e g) = Transform opt s e $ f . g
     fmap f (MkBehavior s e g)  = MkBehavior s e $ f . g
     fmap f (Reactimate e g)    = Reactimate e $ f g
     fmap f (ReactimateSTM e g) = ReactimateSTM e $ f g
@@ -210,22 +210,26 @@ spawnSource_ = spawnSourceWith_ $ return ()
 spawnSourceWith :: State ChannelLength z
                 -> Producer a IO r 
                 -> ReactPipe s r (Event s a)
-spawnSourceWith n source = sourcePoolWith n $ worker source
+spawnSourceWith opt source = sourcePoolWith opt $ worker source
 
 spawnSourceWith_ :: State ChannelLength z
                  -> Producer a IO ()
                  -> ReactPipe s r (Event s a)
-spawnSourceWith_ n source = sourcePoolWith_ n $ worker source
+spawnSourceWith_ opt source = sourcePoolWith_ opt $ worker source
 
 sourcePool :: SourcePool a r ()
            -> ReactPipe s r (Event s a)
 sourcePool = sourcePoolWith $ return ()
 
+sourcePool_ :: SourcePool a () ()
+            -> ReactPipe s r (Event s a)
+sourcePool_ = sourcePoolWith_ $ return ()
+
 sourcePoolWith_ :: State ChannelLength z
                 -> SourcePool a () ()
                 -> ReactPipe s r (Event s a)
-sourcePoolWith_ n source = ReactPipe $ case nonEmpty $ execWriter source of
-                              Just xs -> Free (Source (() <$ n) (f <$> xs) Pure)
+sourcePoolWith_ opt source = ReactPipe $ case nonEmpty $ execWriter source of
+                              Just xs -> Free (Source (() <$ opt) (f <$> xs) Pure)
                               Nothing -> Pure Never
     where
         f = hoist lift
@@ -233,12 +237,12 @@ sourcePoolWith_ n source = ReactPipe $ case nonEmpty $ execWriter source of
 sourcePoolWith :: State ChannelLength z
                -> SourcePool a r ()
                -> ReactPipe s r (Event s a)
-sourcePoolWith n source = case nonEmpty $ execWriter source of
-                              Just xs -> ReactPipe (Free $ Source (() <$ n) (f <$> xs) Pure) 
+sourcePoolWith opt source = case nonEmpty $ execWriter source of
+                              Just xs -> ReactPipe (Free $ Source (() <$ opt) (f <$> xs) Pure) 
                                             >>= uncurry split . splitEvent
                               Nothing -> ReactPipe $ Pure Never
     where
-        f x = hoist lift x >-> P.map Right >>= yield . Left
+        f x = (hoist lift x >-> P.map Right) >>= yield . Left
         split x y = result x >> return y
 
 worker :: Proxy a a' b b' IO r
@@ -259,31 +263,31 @@ spawnSinkWith :: State ChannelLength z
               -> Event s a 
               -> Consumer a IO r 
               -> ReactPipe s r ()
-spawnSinkWith n e = sinkPoolWith n e . worker
+spawnSinkWith opt e = sinkPoolWith opt e . worker
 
 spawnSinkWith_ :: State ChannelLength z
                -> Event s a 
                -> Consumer a IO () 
                -> ReactPipe s r ()
-spawnSinkWith_ n e = sinkPoolWith_ n e . worker
+spawnSinkWith_ opt e = sinkPoolWith_ opt e . worker
 
 sinkPoolWith :: State ChannelLength z
              -> Event s a 
              -> SinkPool a r () 
              -> ReactPipe s r ()
-sinkPoolWith n e sinks = case nonEmpty $ execWriter sinks of
-                            Just xs -> ReactPipe (Free $ Transform (() <$ n) (f <$> xs) e Pure)
+sinkPoolWith opt e sinks = case nonEmpty $ execWriter sinks of
+                            Just xs -> ReactPipe (Free $ Transform (() <$ opt) (f <$> xs) e Pure)
                                           >>= result
                             Nothing -> ReactPipe $ Pure ()
     where
-        f x = hoist lift x >-> P.map closed >>= yield
+        f x = (hoist lift x >-> P.map closed) >>= yield
 
 sinkPoolWith_ :: State ChannelLength z
               -> Event s a 
               -> SinkPool a () () 
               -> ReactPipe s r ()
-sinkPoolWith_ n e sinks = ReactPipe $ case nonEmpty $ execWriter sinks of
-                            Just xs -> Free (Sink (() <$ n) (hoist lift <$> xs) e $ Pure ())
+sinkPoolWith_ opt e sinks = ReactPipe $ case nonEmpty $ execWriter sinks of
+                            Just xs -> Free (Sink (() <$ opt) (hoist lift <$> xs) e $ Pure ())
                             Nothing -> Pure ()
 
 sinkPool :: Event s a 
@@ -310,13 +314,13 @@ spawnPipeWith :: State ChannelLength z
               -> Event s a 
               -> Pipe a b IO r
               -> ReactPipe s r (Event s b)
-spawnPipeWith n e = pipePoolWith n e . worker
+spawnPipeWith opt e = pipePoolWith opt e . worker
 
 spawnPipeWith_ :: State ChannelLength z
                -> Event s a 
                -> Pipe a b IO ()
                -> ReactPipe s r (Event s b)
-spawnPipeWith_ n e = pipePoolWith_ n e . worker
+spawnPipeWith_ opt e = pipePoolWith_ opt e . worker
 
 pipePool :: Event s a 
          -> PipePool a b r ()
@@ -332,20 +336,20 @@ pipePoolWith :: State ChannelLength z
              -> Event s a 
              -> PipePool a b r ()
              -> ReactPipe s r (Event s b)
-pipePoolWith n e pipes = case nonEmpty $ execWriter pipes of
-        Just xs ->  ReactPipe (Free $ Transform (() <$ n) (f <$> xs) e Pure)
+pipePoolWith opt e pipes = case nonEmpty $ execWriter pipes of
+        Just xs ->  ReactPipe (Free $ Transform (() <$ opt) (f <$> xs) e Pure)
                       >>= uncurry split . splitEvent
         Nothing -> ReactPipe $ Pure Never
     where
-        f x = hoist lift x >-> P.map Right >>= yield . Left
+        f x = (hoist lift x >-> P.map Right) >>= yield . Left
         split x y = result x >> return y
 
 pipePoolWith_ :: State ChannelLength z
               -> Event s a 
               -> PipePool a b () ()
               -> ReactPipe s r (Event s b)
-pipePoolWith_ n e pipes = ReactPipe $ case nonEmpty $ execWriter pipes of
-        Just xs -> Free (Transform (() <$ n) (hoist lift <$> xs) e Pure)
+pipePoolWith_ opt e pipes = ReactPipe $ case nonEmpty $ execWriter pipes of
+        Just xs -> Free (Transform (() <$ opt) (hoist lift <$> xs) e Pure)
         Nothing -> Pure Never
 
 retriesOnly :: Int -> Prism' SomeException a -> Restart a
@@ -360,6 +364,22 @@ autonomous :: a
            -> ReactPipe s r (Event s b,Behavior s a)
 autonomous = autonomousWith $ return ()
 
+autonomousEventWith :: State ChannelLength z 
+                    -> a 
+                    -> Event s (a -> a) 
+                    -> (a -> STM (b,a))
+                    -> ReactPipe s r (Event s b,Event s a)
+autonomousEventWith opt x e f = do
+        ref <- ReactPipe $ Free $ MkBehavior x e Pure
+        e'  <- spawnSourceWith opt $ forever $ do
+                y <- lift $ atomically $ do
+                    (e',x') <- f =<< readTVar ref
+                    writeTVar ref $! x'
+                    return (e',x')
+                yield y
+        -- return (e',Behavior $ readTVar ref)
+        return (fst <$> e',snd <$> e')
+
 autonomousWith :: State ChannelLength z 
                -> a 
                -> Event s (a -> a) 
@@ -367,10 +387,10 @@ autonomousWith :: State ChannelLength z
                -> ReactPipe s r (Event s b,Behavior s a)
 autonomousWith opt x e f = do
         ref <- ReactPipe $ Free $ MkBehavior x e Pure
-        e' <- spawnSourceWith opt $ forever $ do
+        e'  <- spawnSourceWith opt $ forever $ do
                 y <- lift $ atomically $ do
                     (e',x') <- f =<< readTVar ref
-                    writeTVar ref x'
+                    writeTVar ref $! x'
                     return e'
                 yield y
         return (e',Behavior $ readTVar ref)

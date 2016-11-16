@@ -116,6 +116,7 @@ executable test
                   , either
                   , cereal
                   , lens
+                  , mtl
                   , pipes
                   , pipes-safe
                   , reactive-pipes
@@ -174,6 +175,7 @@ test-suite test-suite
                   , pipes-safe
                   , reactive-pipes
                   , stm
+                  , mtl
                   , th-printf
   default-language:    Haskell2010
   ghc-options: -threaded

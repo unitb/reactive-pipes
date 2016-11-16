@@ -1,7 +1,21 @@
+{-# LANGUAGE BangPatterns #-}
 module Pipes.Reactive.Discrete where
 
+import Control.Lens
 import Data.Bifunctor
 import Pipes.Reactive -- hiding ((<@>),(<@))
+
+data PairR a b = PairR a !b 
+    deriving (Functor,Foldable,Traversable)
+
+instance Field1 (PairR a b) (PairR c b) a c where
+    _1 f (PairR x y) = (\x' -> PairR x' y) <$> f x
+
+instance Field2 (PairR a b) (PairR a d) b d where
+    _2 f (PairR x y) = PairR x <$> f y
+
+instance Bifunctor PairR where
+    bimap f g (PairR x y) = PairR (f x) (g y)
 
 data Discrete s a = 
     forall b. Discrete (b -> a) b (Event s (b -> b))
@@ -17,12 +31,15 @@ instance Applicative (Discrete s) where
               (unionWith (.) (first <$> stepF) (second <$> stepX))
 
 toBehavior :: Discrete s a -> ReactPipe s r (Behavior s a)
-toBehavior (Discrete f x step) = stepper (f x) . fmap f =<< accumE x step
+toBehavior d@(Discrete f x _step) = stepper (f x) =<< updates d
+
+double :: a -> PairR a a
+double x = PairR x x
 
 stepperD :: a
          -> Event s a
          -> Discrete s a
-stepperD x = Discrete id x . fmap const
+stepperD x = accumD x . fmap const
 
 accumD :: a
        -> Event s (a -> a)
@@ -36,15 +53,32 @@ updates (Discrete f x step) = do
 
 changes :: Discrete s a
         -> ReactPipe s r (Event s (a,a))
-changes (Discrete f x step) = do
-        e <- fmap f <$> accumE x step
+changes d@(Discrete f x _step) = do
+        e <- updates d
         b <- stepper (f x) e
         return $ (,) <$> b <@> e
 
 oldValue :: Discrete s a
          -> ReactPipe s r (Event s a)
-oldValue (Discrete f x step) = do
-        e <- fmap f <$> accumE x step
+oldValue d@(Discrete f x _step) = do
+        e <- updates d
         b <- stepper (f x) e
         return $ b <@ e
+
+valueD :: Discrete s a -> a
+valueD (Discrete f x _) = f x
+
+poll :: Event s b 
+     -> Discrete s a
+     -> ReactPipe s r (Event s a)
+poll e d = do
+    ch <- updates d
+    match ch e
+
+pollAndHold :: Event s b
+            -> Discrete s a
+            -> ReactPipe s r (Discrete s a)
+pollAndHold e d = do
+    e' <- poll e d
+    return $ stepperD (valueD d) e'
 

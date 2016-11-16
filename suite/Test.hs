@@ -8,6 +8,7 @@ import Control.Exception.Lens
 -- import Control.Concurrent.Async
 import Control.Lens hiding (each)
 import Control.Monad
+import Control.Monad.Writer
 
 -- import System.Posix.Process.ByteString
 
@@ -18,6 +19,7 @@ import Control.Monad
 import           Pipes 
 import qualified Pipes.Prelude as P
 import           Pipes.Reactive
+import           Pipes.Reactive.Discrete
 import           Pipes.Reactive.Interpreter as P
 -- import           Pipes.Reactive.Socket
 -- import           Pipes.Safe
@@ -50,12 +52,22 @@ import Text.Printf.TH
 --         -> Pipe () Int m r
 -- numbers n = await >> yield n >> numbers (n+1)
 
-foo :: ReactPipe s r ()
+foo7 :: ReactPipe s Int ()
+foo7 = do
+        void $ spawnSource $ (P.zip (tick 5000000) $ each [1..6] >-> P.mapM print) >> return 3
+
+foo :: ReactPipe s Int ()
 foo = do
-         e0 <- spawnSource_ $ restart (retries 2) $ P.zipWith const 
-                (each [1..6] >-> P.mapM (liftA2 (>>) [sP|send: %d|] return)) 
-                (tick 1000000)
+         e0 <- sourcePool_ $ do
+            worker $ restart (retries 2) $ onTick 1000000 (each [1..6])
+                 >-> P.mapM (liftA2 (>>) [sP|send (a): %d|] return)
+                -- (tick 1000000)
+            worker $ restart (retries 2) $ onTick 1000000 
+                (each [7..16] >-> P.mapM (liftA2 (>>) [sP|send (b): %d|] return)) 
+                -- (tick 1000000)
          -- >-> P.map (const ()) >-> numbers 0
+         -- spawnSink e0 $ P.take 4 >-> P.drain >> return 13
+         -- _ <- spawnSource $ onTickSec (each [1..5]) >> return 17
          e1 <- pipePool e0 $ do
                 worker $ P.mapM $ \n -> do
                     threadDelay 50000
@@ -69,6 +81,9 @@ foo = do
                         -- fail "fool"
                         [sP|- %?|] ("second",n)
                         return $ ("second",n)
+                -- worker $ (P.take 10 >-> P.mapM [sP|take: %d|] >-> P.drain) >> lift (putStrLn "print 11") >> return 11
+                worker $ (P.take 11 >-> P.print) >> lift (putStrLn "print 11") >> return 11
+         -- result e0
          sinkPool e1 $ do
                 worker $ forever $ do
                         lift . [sP|reactimate: 1a) %?|] =<< await
@@ -120,6 +135,31 @@ foo4 = do
         reactimate $ [sP|batch: %?|] <$> e2
         reactimate $ [sP|match: %?|] <$> e3
 
+type Block s = Writer [Event s (IO ())] ()
+
+block :: Block s -> ReactPipe s r ()
+block = reactimate . fmap f . unionsWith (>>) . execWriter
+    where
+        f x = putStrLn "begin" >> x >> putStrLn "end\n"
+
+reactimate' :: Event s (IO ()) -> Block s
+reactimate' = tell . pure
+
+foo6 :: ReactPipe s String ()
+foo6 = do
+        e0 <- spawnSource $ onTickSec (each [1..10]) >> return "foo"
+        b  <- stepper 0 e0
+        e1 <- accumE 0 $ const <$> e0
+        let d = stepperD 0 e0
+        dx  <- changes d
+        dx' <- updates d
+        -- reactimate $ print <$> e0
+        block $ do
+            reactimate' $ [sP|b <@> e0: %?|] <$> ((,) <$> b <@> e0)
+            reactimate' $ [sP|e1: %?|] <$> e1
+            reactimate' $ [sP|dx:  %?|] <$> dx
+            reactimate' $ [sP|dx': %?|] <$> dx'
+
 foo2 :: ReactPipe s r ()
 foo2 = do
          e0 <- spawnSource $ restart (retries 2) $ P.zipWith const 
@@ -157,7 +197,7 @@ foo2 = do
 
 main :: IO ()
 main = do
-    x <- trying id $ runReactive foo5
+    x <- trying id $ runReactive foo
     print x
     threadDelay 3000000
     -- foo3

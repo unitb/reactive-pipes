@@ -24,3 +24,8 @@ onTick :: MonadIO m
        -> Producer a m r
        -> Producer a m r
 onTick t p = P.zipWith const p (tick t)
+
+onTickSec :: MonadIO m
+          => Producer a m r
+          -> Producer a m r
+onTickSec p = P.zipWith const p tickSec

@@ -62,16 +62,29 @@ collectAll out reg (x:xs) = do
             forOf_ traverse (x:xs) cancel
             return $ Right (r,[])
 
+data TerminationWithoutResult = TerminationWithoutResult
+    deriving (Show)
+
+instance Exception TerminationWithoutResult where
+    displayException _ = "thread pool terminated without result"
+
+class AsNoResultException t where
+    _TerminationWithoutResult :: Prism' t TerminationWithoutResult
+instance AsNoResultException SomeException where
+    _TerminationWithoutResult = prism' toException fromException
+instance AsNoResultException TerminationWithoutResult where
+    _TerminationWithoutResult = id
 
 collectAll_ :: STM r
             -> ([Async a] -> STM ())
             -> [Async a] 
             -> IO (Either (NonEmpty SomeException) r)
-collectAll_ _ _ [] = fail "thread pool terminated without result"
+collectAll_ _ _ [] = throw TerminationWithoutResult
 collectAll_ out reg (x:xs) = do
-    atomically (do
-            y <- (Left <$> out) <|> (Right <$> waitOne (x :| xs))
-            y & (_Right._1) (liftA2 (liftA2 const) return reg) )
+    atomically (
+            (Left <$> out) <|> 
+            (fmap Right $ waitOne (x :| xs) 
+                >>= _1 (\xs' -> reg xs' >> return xs')) )
         >>= \case
             Right (xs',rs) -> do
                 let es = lefts $ toList rs
@@ -81,7 +94,7 @@ collectAll_ out reg (x:xs) = do
                         return $ Left es'
                     Nothing  -> collectAll_ out reg xs'
             Left r -> do
-                forOf_ traverse (x:xs) cancel
+                mapMOf_ traverse cancel (x:xs) 
                 return $ Right r
 
 waitEither :: Async a 

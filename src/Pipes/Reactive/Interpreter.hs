@@ -54,14 +54,14 @@ mySpawn opt = do
     let _ = writers :: TVar Int
     (out,input,_seal) <- spawn' $ bounded n
     let getOut = do
-                modifyTVar writers succ
+                modifyTVar' writers succ
                 return (out,decAndSeal)
         sealIf = do
                 c <- readTVar writers
                 check $ c == 0
                 return Nothing
         decAndSeal = do
-              modifyTVar writers pred
+              modifyTVar' writers pred
         sealAfterLast (Input i) = Input $ i `orElse` sealIf
     return (Output' getOut,sealAfterLast input)
 
@@ -71,12 +71,12 @@ splitHandles :: [ReactHandle s r]
                 , [Event s (IO ())]
                 , [Event s r]
                 , [Behavior s (IO ())]) 
-splitHandles = foldMap $ \case 
-            Thread ts -> ([ts],[],[],[],[])
-            Init proc -> ([],[proc],[],[],[])
-            ReactEvent e -> ([],[],[e],[],[])
-            Result e -> ([],[],[],[e],[])
-            Finalizer final -> ([],[],[],[],[final])
+splitHandles = flip foldr mempty $ \case 
+            Thread ts    -> _1 <>~ [ts]
+            Init proc    -> _2 <>~ [proc] -- ([],[],[proc],[],[],[])
+            ReactEvent e -> _3 <>~ [e] -- ([],[],[],[e],[],[])
+            Result e     -> _4 <>~ [e] -- ([],[],[],[],[e],[])
+            Finalizer final -> _5 <>~ [final] -- ([],[],[],[],[],[final])
 
 newThread :: IO (Effect (SafeT IO) ()) 
           -> M s r ()
@@ -129,7 +129,7 @@ makeChannel :: M s r (ChannelSet s a,Output' a)
 makeChannel = do 
         n <- allocate id
         v <- lift $ newTVarIO []
-        let ch (Output' out') = modifyTVar v . (:) =<< out'
+        let ch (Output' out') = modifyTVar' v . (:) =<< out'
             chSet = ChannelSet $ Map.singleton n $ Channel ch pure
             out = Output' $ bimap catOutput run . foldMap (second Cons) <$> readTVar v
         return (chSet,out)
@@ -174,12 +174,13 @@ runReactive' (Free (Sink n sinks e cmd)) = do
         runReactive' cmd 
 runReactive' (Free (MkBehavior x e f)) = do
         ref <- liftIO $ newTVarIO x
-        reactimateSTM $ modifyTVar ref <$> e
+        reactimateSTM $ modifyTVar' ref <$> e
         runReactive' $ f ref
 runReactive' (Free (AccumEvent x e f)) = do
         ref <- liftIO $ newTVarIO x
-        reactimateSTM $ modifyTVar ref <$> e
-        runReactive' $ f (Behavior (readTVar ref) <@ e)
+        let e' = flip ($) <$> Behavior (readTVar ref) <@> e
+        reactimateSTM $ (writeTVar ref $!) <$> e'
+        runReactive' $ f e'
 runReactive' (Free (MFix e f)) = do
         mfix (runReactive' . e)
             >>= runReactive' . f
@@ -198,7 +199,10 @@ runReactive' (Free (Finalize e f)) = do
         tell [Finalizer e]
         runReactive' f
 
-data Machine r = Machine (STM r) [Effect (SafeT IO) ()] (STM (IO ()))
+data Machine r = Machine 
+        (STM r) 
+        [Effect (SafeT IO) ()] 
+        (STM (IO ()))
 
 unwrapBehavior :: Behavior s a -> STM a
 unwrapBehavior (Behavior v) = v
@@ -213,7 +217,7 @@ compile (ReactPipe pipe) = do
                             splitHandles 
                             (runReactive' pipe)
                     r <- liftIO newEmptyTMVarIO 
-                    reactimateSTM $ putTMVar r <$> unionsWith const ret
+                    reactimateSTM $ void . tryPutTMVar r <$> unionsWith const ret
                     case unionsWith (>>) react of
                         Never  -> return ()
                         react' -> do
