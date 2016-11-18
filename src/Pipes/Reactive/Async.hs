@@ -1,4 +1,4 @@
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE LambdaCase,QuasiQuotes #-}
 module Pipes.Reactive.Async where
 
 import Control.Applicative
@@ -9,7 +9,7 @@ import Control.Lens hiding ((...))
 import Control.Monad
 
 import Data.Either
-import Data.List.NonEmpty
+import Data.List.NonEmpty hiding (length)
 
 import           Pipes
 import qualified Pipes.Prelude as P

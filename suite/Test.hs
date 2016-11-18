@@ -1,4 +1,4 @@
-{-# LANGUAGE QuasiQuotes,RecursiveDo,TupleSections #-}
+{-# LANGUAGE QuasiQuotes,RecursiveDo,TupleSections,TemplateHaskell,RankNTypes #-}
 module Main where
 
 import Control.Applicative
@@ -13,8 +13,10 @@ import Control.Monad.Writer
 -- import System.Posix.Process.ByteString
 
 -- import Data.Array
+-- import Data.Bitraversable
 -- import Data.Either.Combinators
 -- import Data.Serialize
+import Data.Void
 
 import           Pipes 
 import qualified Pipes.Prelude as P
@@ -27,6 +29,9 @@ import           Pipes.Tick
 
 import Prelude hiding (putStr,getLine)
 
+import Language.Haskell.TH hiding (match)
+
+import System.Environment
 import Text.Printf.TH
 
 -- import Reactive.Banana hiding (Event)
@@ -52,12 +57,24 @@ import Text.Printf.TH
 --         -> Pipe () Int m r
 -- numbers n = await >> yield n >> numbers (n+1)
 
+foo8 :: ReactPipe s () ()
+foo8 = do
+    -- kb <- spawnSource $ (P.stdinLn >-> P.take 3) >> liftIO (print "end")
+    _kb <- spawnSource $ (onTickSec $ each [1..] >-> P.map show >-> P.take 3) >> liftIO (print "end")
+    -- _kb <- spawnSource $ (onTickSec $ each [1..] >-> P.map show >-> P.take 3) >> liftIO (print "end")
+    result $ () <$ filterE ("2" ==) _kb
+    -- result $ () <$ _kb
+    reactimate $ print <$> _kb
+    -- reactimate $ putStrLn "AAH!" <$ filterE ("2" ==) kb
+    -- reactimate $ print <$> kb
+    return ()
+
 foo7 :: ReactPipe s Int ()
 foo7 = do
         void $ spawnSource $ (P.zip (tick 5000000) $ each [1..6] >-> P.mapM print) >> return 3
 
-foo :: ReactPipe s Int ()
-foo = do
+foo1 :: ReactPipe s Int ()
+foo1 = do
          e0 <- sourcePool_ $ do
             worker $ restart (retries 2) $ onTick 1000000 (each [1..6])
                  >-> P.mapM (liftA2 (>>) [sP|send (a): %d|] return)
@@ -67,7 +84,7 @@ foo = do
                 -- (tick 1000000)
          -- >-> P.map (const ()) >-> numbers 0
          -- spawnSink e0 $ P.take 4 >-> P.drain >> return 13
-         -- _ <- spawnSource $ onTickSec (each [1..5]) >> return 17
+         _ <- spawnSource $ onTickSec (each [1..5]) >> return 17
          e1 <- pipePool e0 $ do
                 worker $ P.mapM $ \n -> do
                     threadDelay 50000
@@ -160,7 +177,7 @@ foo6 = do
             reactimate' $ [sP|dx:  %?|] <$> dx
             reactimate' $ [sP|dx': %?|] <$> dx'
 
-foo2 :: ReactPipe s r ()
+foo2 :: ReactPipe s Void ()
 foo2 = do
          e0 <- spawnSource $ restart (retries 2) $ P.zipWith const 
                 (each [1..3]) 
@@ -195,10 +212,31 @@ foo2 = do
     -- Free monad IO
     --   extendible language sum types from GHC.Generics
 
+callTest :: Show r
+         => (forall s. ReactPipe s r ())
+         -> IO ()
+callTest cmd = do
+        x <- trying id $ runReactive cmd
+        print x
+
 main :: IO ()
 main = do
-    x <- trying id $ runReactive foo
-    print x
-    threadDelay 3000000
+    -- x <- trying id $ runReactive foo
+    let m = $(do
+            let takeWhileJustM _f [] = return []
+                takeWhileJustM f (x:xs) = maybe (return []) (\y -> (y:) <$> takeWhileJustM f xs) =<< f x
+                names n = [ n ++ show i | i <- [1..] ]
+                pairE (e0,e1) = tupE [e0,e1]
+                testCase t = [|callTest $(varE t)|]
+                listDec n = zip (names n) <$> takeWhileJustM lookupValueName (names n)
+            listE . map (pairE . bimap stringE testCase) =<< listDec "foo" )
+    args <- getArgs
+    case args of
+        [x] 
+            | Just cmd <- lookup x m -> do
+                [sP|Running %s...\n|] x
+                cmd
+                threadDelay 2000000
+        _ -> putStrLn "Expecting one of" >> mapM_ ([sP|- %s|].fst) m
     -- foo3
 

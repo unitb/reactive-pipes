@@ -15,7 +15,7 @@ import Control.Monad.State
 
 import Data.Bifunctor
 import Data.Either
-import Data.List.NonEmpty hiding (length,zipWith)
+import Data.List.NonEmpty as N hiding (length,zipWith,head,last)
 import qualified Data.Map as Map
 import Data.Maybe
 import Data.Monoid.Monad
@@ -27,7 +27,7 @@ import           Pipes.Reactive hiding (reactimateSTM)
 import           Pipes.Reactive.Async
 import           Pipes.Safe hiding (register,bracket)
 
-import Text.Printf.TH hiding (s)
+import Text.Printf.TH
 
 type M s r = RWST ()
             [ReactHandle s r]
@@ -52,8 +52,10 @@ mySpawn opt = do
     let (ChannelLength n) = execState opt $ ChannelLength 10
     writers <- newTVarIO 0
     let _ = writers :: TVar Int
-    (out,input,_seal) <- spawn' $ bounded n
-    let getOut = do
+    q <- newTBQueueIO n
+    let input  = Input $ Just <$> readTBQueue q
+        out    = Output $ fmap (const True) . writeTBQueue q 
+        getOut = do
                 modifyTVar' writers succ
                 return (out,decAndSeal)
         sealIf = do
@@ -62,6 +64,7 @@ mySpawn opt = do
                 return Nothing
         decAndSeal = do
               modifyTVar' writers pred
+              readTVar writers
         sealAfterLast (Input i) = Input $ i `orElse` sealIf
     return (Output' getOut,sealAfterLast input)
 
@@ -110,13 +113,17 @@ register :: Channel s a -> Output' a -> STM ()
 register (Channel b f) (Output' out) = b $ Output' $ out & mapped._1 %~ conditional f
 
 registerSet :: ChannelSet s a -> Output' a -> STM ()
-registerSet (ChannelSet m) = forM_ m . flip register
+registerSet (ChannelSet m) out = do
+    forM_ m . flip register $ out
+
+runOutput :: Output' (STM ())
+runOutput = Output' $ return (Output (True <$),return 1)
 
 reactimateSTM :: Event s (STM ()) -> M s r ()
 reactimateSTM e = do
         tell $ case e of
                 Never -> []
-                Event _ f -> [Init $ registerSet f $ Output' $ return (Output (True <$),return ())]
+                Event _ f -> [Init $ registerSet f runOutput]
 
 allocate :: (Enum a,Monad m,Monoid w) 
          => Lens' s a -> RWST r w s m a
@@ -125,13 +132,18 @@ allocate ln = zoom ln $ state $ liftA2 (,) id succ
 catOutput :: Output (Maybe a) -> Output a
 catOutput = contramap Just
 
+compileOut :: [(Output (Maybe a), STM Int)] -> (Output a, STM Int)
+compileOut = bimap catOutput (fmap getSum . run) . foldMap (second $ Cons . fmap Sum)
+
 makeChannel :: M s r (ChannelSet s a,Output' a)
 makeChannel = do 
         n <- allocate id
         v <- lift $ newTVarIO []
         let ch (Output' out') = modifyTVar' v . (:) =<< out'
             chSet = ChannelSet $ Map.singleton n $ Channel ch pure
-            out = Output' $ bimap catOutput run . foldMap (second Cons) <$> readTVar v
+            out = Output' $ do
+                evts <- readTVar v
+                return $ compileOut $ evts
         return (chSet,out)
 
 withChannel :: MonadSafe m
@@ -144,14 +156,14 @@ withChannel (Output' cmd) f = do
 makeEvent :: NonEmpty (Producer a (SafeT IO) ())
           -> M s r (Event s a)
 makeEvent sources = do
-        es <- forM sources $ \s -> do
-          (v,getV) <- makeChannel
-          (u,getU) <- makeChannel
-          newThread $ atomically $
+        es <- forM sources $ \src -> do
+            (v,getV) <- makeChannel
+            (u,getU) <- makeChannel
+            newThread $ atomically $
                 withChannel getV $ \out -> 
-                withChannel getU $ \upd -> 
-                    return $ s >-> toOutput (out <> upd)
-          return $ Event v u
+                withChannel getU $ \upd -> do
+                    return $ src >-> toOutput (out <> upd)
+            return $ Event v u
         return $ unionsWith const es
 
     -- Idea: 
@@ -169,8 +181,8 @@ runReactive' (Free (Transform n pipe e f)) = do
         runReactive' $ f e'
 runReactive' (Free (Sink n sinks e cmd)) = do
         input <- readEvent n e
-        forM_ sinks $ \s ->
-          newThread $ return $ input >-> s
+        forM_ sinks $ \snk ->
+          newThread $ return $ input >-> snk
         runReactive' cmd 
 runReactive' (Free (MkBehavior x e f)) = do
         ref <- liftIO $ newTVarIO x
@@ -213,10 +225,12 @@ unwrapReactPipe (ReactPipe cmd) = cmd
 compile :: (forall s. ReactPipe s r a) -> IO (a,Machine r)
 compile (ReactPipe pipe) = do 
         ((r,x),_,(ts,is,_react,_return,final)) <- (_3 %~ splitHandles) <$> runRWST 
-                (do (x,(_,_,react,ret,_final)) <- listens 
+                (do r <- liftIO newEmptyTMVarIO 
+                    (x,(_,_,react,ret,_final)) <- listens 
                             splitHandles 
-                            (runReactive' pipe)
-                    r <- liftIO newEmptyTMVarIO 
+                            (runReactive' $ do
+                                pipe
+                                )
                     reactimateSTM $ void . tryPutTMVar r <$> unionsWith const ret
                     case unionsWith (>>) react of
                         Never  -> return ()
@@ -240,7 +254,7 @@ runMachine (Machine res ts' final) = do
         let wrapup r = do
                 mapM_ cancel <=< atomically . readTVar $ r
                 join $ atomically final
-        [sP| Threads: %d |] $ length ts'
+        [sP| Threads: %d - ... |] $ length ts'
         bracket (newTVarIO []) 
           wrapup
           (\r -> do

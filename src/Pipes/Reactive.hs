@@ -3,6 +3,7 @@
            , ConstraintKinds
            , TypeOperators
            , LambdaCase
+           , QuasiQuotes
            , RankNTypes
            , GADTs
            , TemplateHaskell
@@ -21,11 +22,10 @@ import Control.Monad.RWS
 import Control.Monad.State
 import Control.Monad.Writer
 
-import Data.Functor.Apply
 import           Data.Map (Map)
 import qualified Data.Map as Map
-import Data.List.NonEmpty hiding (reverse)
-import Data.These
+import           Data.List.NonEmpty hiding (reverse)
+import           Data.These
 
 import           Pipes
 import           Pipes.Concurrent 
@@ -36,6 +36,8 @@ import           Pipes.Safe hiding (register,bracket)
 import Prelude hiding ((.),id)
 
 import Unsafe.Coerce
+
+import Text.Printf.TH
 
 newtype ChannelLength = ChannelLength Int
 
@@ -63,10 +65,10 @@ instance MonadIO (ReactPipe s r) where
     liftIO cmd = ReactPipe $ Free (LiftIO $ Pure <$> cmd)
 
 instance Functor (ReactiveF s r) where
-    fmap f (Source opt s g)    = Source opt s $ f . g
-    fmap f (Sink opt s e g)    = Sink opt s e $ f g
-    fmap f (Transform opt s e g) = Transform opt s e $ f . g
-    fmap f (MkBehavior s e g)  = MkBehavior s e $ f . g
+    fmap f (Source opt src g)  = Source opt src $ f . g
+    fmap f (Sink opt snk e g)  = Sink opt snk e $ f g
+    fmap f (Transform opt pipe e g) = Transform opt pipe e $ f . g
+    fmap f (MkBehavior x e g)  = MkBehavior x e $ f . g
     fmap f (Reactimate e g)    = Reactimate e $ f g
     fmap f (ReactimateSTM e g) = ReactimateSTM e $ f g
     fmap f (AccumEvent x e g)  = AccumEvent x e $ f . g
@@ -87,6 +89,9 @@ newtype ReactPipe s r a = ReactPipe (Free (ReactiveF s r) a)
 
 newtype SenderId = SenderId Int
     deriving (Enum,Eq,Ord)
+
+instance Show SenderId where
+    show (SenderId n) = [s|(%d)|] n
 
 newtype ChannelSet s a = ChannelSet
             { register' :: Map SenderId (Channel s a) }
@@ -109,7 +114,7 @@ data Behavior s a = Behavior (STM a)
 instance Functor (Channel s) where
     fmap f (Channel b g) = Channel b $ (mapped.mapped %~ f) . g
 
-newtype Output' a = Output' (STM (Output a,STM ()))
+newtype Output' a = Output' (STM (Output a,STM Int))
 
 chanLen :: Lens' ChannelLength Int
 chanLen f (ChannelLength n) = ChannelLength <$> f n
@@ -140,13 +145,25 @@ batch input tick = do
     return $ filterJust $ nonEmpty.reverse <$> lastE <@ tick
 
 apCh :: (r -> r') 
-     -> (r -> STM (Maybe (a -> b)))
+     -> (a -> a -> a)
+     -> (r -> STM (Maybe a))
      -> (r' -> STM (Maybe a))
-     -> (r -> STM (Maybe b))
-apCh refl f x = liftA2 (liftA2 (<*>)) f (x.refl)
+     -> (r -> STM (Maybe a))
+apCh refl f x y = liftA2 (liftA2 $ combineMaybe f) x (y.refl)
 
-instance Apply (Channel s) where
-    Channel r f <.> Channel _ x = Channel r $ apCh unsafeCoerce f x
+combineMaybe :: (a -> a -> a)
+             -> Maybe a
+             -> Maybe a
+             -> Maybe a
+combineMaybe f (Just x) y = (f x <$> y) <|> Just x
+combineMaybe _f Nothing y = y
+
+
+combine :: (a -> a -> a) 
+        -> Channel s a 
+        -> Channel s a 
+        -> Channel s a 
+combine f (Channel r x) (Channel _ y) = Channel r $ apCh unsafeCoerce f x y
 
 applyC :: STM (a -> b)
        -> Channel s a
@@ -162,7 +179,7 @@ unionCS :: (a -> a -> a)
         -> ChannelSet s a
         -> ChannelSet s a
         -> ChannelSet s a
-unionCS f (ChannelSet ch) (ChannelSet ch') = ChannelSet $ Map.unionWith (liftF2 f) ch ch'
+unionCS f (ChannelSet ch) (ChannelSet ch') = ChannelSet $ Map.unionWith (combine f) ch ch'
 
 infixl 4 <@>
 infixl 4 <@

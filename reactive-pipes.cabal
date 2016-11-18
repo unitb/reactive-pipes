@@ -117,6 +117,8 @@ executable test
                   , cereal
                   , lens
                   , mtl
+                  , bifunctors
+                  , template-haskell
                   , pipes
                   , pipes-safe
                   , reactive-pipes
@@ -172,6 +174,8 @@ test-suite test-suite
                   , cereal
                   , lens
                   , pipes
+                  , template-haskell
+                  , bifunctors
                   , pipes-safe
                   , reactive-pipes
                   , stm
