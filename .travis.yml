@@ -20,8 +20,8 @@ cache:
   - $HOME/.ghc
   - $HOME/.cabal
   - $HOME/.stack
-  - $HOME/literate-unitb/unfoldable/.stack-work/install
-  - $HOME/literate-unitb/unfoldable/.stack-work/downloaded
+  - $HOME/unitb/unfoldable/.stack-work/install
+  - $HOME/unitb/unfoldable/.stack-work/downloaded
   timeout: 1000
 
 # The different configurations we want to test. We have BUILD=cabal which uses
