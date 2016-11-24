@@ -30,7 +30,10 @@ instance Applicative (Discrete s) where
               (xF,xX) 
               (unionWith (.) (first <$> stepF) (second <$> stepX))
 
-toBehavior :: Discrete s a -> ReactPipe s r (Behavior s a)
+
+toBehavior :: MonadReact s r m
+           => Discrete s a 
+           -> m (Behavior s a)
 toBehavior d@(Discrete f x _step) = stepper (f x) =<< updates d
 
 double :: a -> PairR a a
@@ -46,20 +49,23 @@ accumD :: a
        -> Discrete s a
 accumD = Discrete id
 
-updates :: Discrete s a
-        -> ReactPipe s r (Event s a)
+updates :: MonadReact s r m
+        => Discrete s a
+        -> m (Event s a)
 updates (Discrete f x step) = do
         fmap f <$> accumE x step
 
-changes :: Discrete s a
-        -> ReactPipe s r (Event s (a,a))
+changes :: MonadReact s r m
+        => Discrete s a
+        -> m (Event s (a,a))
 changes d@(Discrete f x _step) = do
         e <- updates d
         b <- stepper (f x) e
         return $ (,) <$> b <@> e
 
-oldValue :: Discrete s a
-         -> ReactPipe s r (Event s a)
+oldValue :: MonadReact s r m
+         => Discrete s a
+         -> m (Event s a)
 oldValue d@(Discrete f x _step) = do
         e <- updates d
         b <- stepper (f x) e
@@ -68,16 +74,18 @@ oldValue d@(Discrete f x _step) = do
 valueD :: Discrete s a -> a
 valueD (Discrete f x _) = f x
 
-poll :: Event s b 
+poll :: MonadReact s r m
+     => Event s b 
      -> Discrete s a
-     -> ReactPipe s r (Event s a)
+     -> m (Event s a)
 poll e d = do
     ch <- updates d
     match ch e
 
-pollAndHold :: Event s b
+pollAndHold :: MonadReact s r m
+            => Event s b
             -> Discrete s a
-            -> ReactPipe s r (Discrete s a)
+            -> m (Discrete s a)
 pollAndHold e d = do
     e' <- poll e d
     return $ stepperD (valueD d) e'

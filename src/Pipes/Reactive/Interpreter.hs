@@ -40,7 +40,6 @@ newtype ReceiverId = ReceiverId Int
 data ReactHandle s r = 
             Thread (IO (Effect (SafeT IO) ()))
             | Init (STM ())
-            | ReactEvent (Event s (IO ()))
             | Finalizer  (Behavior s (IO ()))
             | Result (Event s r)
 
@@ -71,15 +70,13 @@ mySpawn opt = do
 splitHandles :: [ReactHandle s r] 
              -> ( [IO (Effect (SafeT IO) ())]
                 , [STM ()]
-                , [Event s (IO ())]
                 , [Event s r]
                 , [Behavior s (IO ())]) 
-splitHandles = flip foldr mempty $ \case 
+splitHandles = flip foldr mempty $ \case 
             Thread ts    -> _1 <>~ [ts]
             Init proc    -> _2 <>~ [proc] -- ([],[],[proc],[],[],[])
-            ReactEvent e -> _3 <>~ [e] -- ([],[],[],[e],[],[])
-            Result e     -> _4 <>~ [e] -- ([],[],[],[],[e],[])
-            Finalizer final -> _5 <>~ [final] -- ([],[],[],[],[],[final])
+            Result e     -> _3 <>~ [e] -- ([],[],[],[],[e],[])
+            Finalizer final -> _4 <>~ [final] -- ([],[],[],[],[],[final])
 
 newThread :: IO (Effect (SafeT IO) ()) 
           -> M s r ()
@@ -148,7 +145,7 @@ makeChannel = do
 
 withChannel :: MonadSafe m
             => Output' a -> (Output a -> STM (m r)) -> STM (m r)
-withChannel (Output' cmd) f = do
+withChannel (Output' cmd) f = do
         (out,final) <- cmd
         prog <- f out
         return $ prog `finally` liftIO (atomically final)
@@ -190,15 +187,12 @@ runReactive' (Free (MkBehavior x e f)) = do
         runReactive' $ f ref
 runReactive' (Free (AccumEvent x e f)) = do
         ref <- liftIO $ newTVarIO x
-        let e' = flip ($) <$> Behavior (readTVar ref) <@> e
+        let e' = flip ($) <$> Behavior (readTVar ref) <@> e
         reactimateSTM $ (writeTVar ref $!) <$> e'
         runReactive' $ f e'
 runReactive' (Free (MFix e f)) = do
         mfix (runReactive' . e)
             >>= runReactive' . f
-runReactive' (Free (Reactimate e f)) = do
-        tell [ReactEvent e]
-        runReactive' f
 runReactive' (Free (LiftIO x)) = do
         lift x >>= runReactive'
 runReactive' (Free (ReactimateSTM e f)) = do
@@ -219,26 +213,16 @@ data Machine r = Machine
 unwrapBehavior :: Behavior s a -> STM a
 unwrapBehavior (Behavior v) = v
 
-unwrapReactPipe :: ReactPipe s r a -> Free (ReactiveF s r) a
-unwrapReactPipe (ReactPipe cmd) = cmd
-
 compile :: (forall s. ReactPipe s r a) -> IO (a,Machine r)
 compile (ReactPipe pipe) = do 
-        ((r,x),_,(ts,is,_react,_return,final)) <- (_3 %~ splitHandles) <$> runRWST 
+        ((r,x),_,(ts,is,_return,final)) <- (_3 %~ splitHandles) <$> runRWST 
                 (do r <- liftIO newEmptyTMVarIO 
-                    (x,(_,_,react,ret,_final)) <- listens 
+                    (x,(_,_,ret,_final)) <- listens 
                             splitHandles 
                             (runReactive' $ do
                                 pipe
                                 )
                     reactimateSTM $ void . tryPutTMVar r <$> unionsWith const ret
-                    case unionsWith (>>) react of
-                        Never  -> return ()
-                        react' -> do
-                            runReactive' 
-                                $ unwrapReactPipe $ spawnSink 
-                                      react' 
-                                      (for cat lift)
                     return (takeTMVar r,x) ) 
                 () 
                 (SenderId 0)
@@ -259,7 +243,7 @@ runMachine (Machine res ts' final) = do
           wrapup
           (\r -> do
             hs  <- mapM (async.runEffect.runSafeP) ts'
-            atomically $ writeTVar r hs
+            atomically $ writeTVar r hs
             collectAll_ res (writeTVar r) hs >>= \case 
                 Right x -> return x
                 Left (e :| _) -> throwM e)

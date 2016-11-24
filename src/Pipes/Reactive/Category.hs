@@ -6,7 +6,6 @@ module Pipes.Reactive.Category where
 
 import Control.Applicative
 import Control.Category
-import Control.Exception
 import Control.Lens
 import Control.Monad
 
@@ -48,10 +47,11 @@ arr f = rmap f id
 fromThese :: Monad m => Pipe (These a b) (Either a b) m r
 fromThese = P.for cat $ here (yield.Left) >=> there (yield.Right) >=> const (pure ())
 
-getUnion :: (forall s. Event s a -> ReactPipe s r (Event s a'))
-         -> (forall s. Event s b -> ReactPipe s r (Event s b'))
-         -> (forall s. (Event s a,Event s b) -> ReactPipe s r (Event s (These a' b')))
-getUnion cmd0 cmd1 (e0,e1) = liftA2 unionThese (cmd0 e0) (cmd1 e1)
+getUnion :: Applicative m
+         => (Event s a -> m (Event s a'))
+         -> (Event s b -> m (Event s b'))
+         -> ((Event s a,Event s b) -> m (Event s (These a' b')))
+getUnion cmd0 cmd1 (e0,e1) = liftA2 unionThese (cmd0 e0) (cmd1 e1)
 
 (***) :: forall r a b a' b'
       .  CPipe r a b
@@ -63,7 +63,7 @@ CPipe p0 *** React p1a cmd p1b
     where
         -- cmd' :: (forall s. Event s a -> Event s b -> ReactPipe s r (Event s (These a b)))
         -- cmd' e0 e1 = unionThese e0 <$> cmd e1
-React p1a cmd p1b *** CPipe p0 
+React p1a cmd p1b *** CPipe p0 
             = dimap swapEither swapEither $ CPipe p0 *** React p1a cmd p1b
 React p0a cmd0 p0b *** React p1a cmd1 p1b 
             = React (p0a *^* p1a) (\e -> getUnion cmd0 cmd1 $ splitEvent e) (fromThese >-> p0b *^* p1b)
@@ -96,7 +96,7 @@ makeDynamic :: CPipe r a b
 makeDynamic x = case x of
             CPipe p1 -> ReifiedReactPipe' $ \e -> spawnPipe e p1
             React p1 intl p2 -> ReifiedReactPipe' $ \e -> do
-                    flip spawnPipe p2 =<< intl =<< spawnPipe e p1 
+                    flip spawnPipe p2 =<< intl =<< spawnPipe e p1 
 
 runCPipe :: Producer a IO r 
          -> CPipe r a b
@@ -148,19 +148,21 @@ liftReact :: (forall s. Event s a -> ReactPipe s r (Event s b))
           -> CPipe r a b
 liftReact f = React cat f cat
 
-execute' :: Event s a
+execute' :: (MonadReact s r m)
+         => Event s a
          -> Event s (ReifiedReactPipe' () a b)
-         -> ReactPipe s r (Event s b)
+         -> m (Event s b)
 execute' e prog = do
         ((exc,_),r) <- first splitEvent <$> P.execute' e prog
-        reactimate $ throw <$> exc
+        eThrow exc
         return r
 
 
-execute_ :: Event s (ReifiedReactPipe () c)
-         -> ReactPipe s r (Event s c)
+execute_ :: (MonadReact s r m)
+         => Event s (ReifiedReactPipe () c)
+         -> m (Event s c)
 execute_ e = do
         ((exc,_),r) <- first splitEvent <$> execute e
-        reactimate $ throw <$> exc
+        eThrow exc
         return r
 

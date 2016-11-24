@@ -19,7 +19,7 @@ newtype ReifiedReactPipe r a = ReifiedReactPipe
           (forall s. ReactPipe s r (Event s a))
 
 newtype ReifiedReactPipe' r a b = ReifiedReactPipe'
-          (forall s. Event s a -> ReactPipe s r (Event s b))
+          (forall s. Event s a -> ReactPipe s r (Event s b))
 
 waitForFirst :: (a -> STM b) -> [a] -> STM (b,[a])
 waitForFirst = waitForFirst' []
@@ -38,9 +38,10 @@ waitThese f g (x,y) =
                    ((flip These <$> g y) <|> return This)
         <|> (That <$> g y)
 
-execute' :: Event s1 a
+execute' :: MonadReact s1 r1 m
+         => Event s1 a
          -> Event s1 (ReifiedReactPipe' r a b)
-         -> ReactPipe s1 r1 (Event s1 (Either SomeException r),Event s1 b)
+         -> m (Event s1 (Either SomeException r),Event s1 b)
 execute' e cmd = do
     e' <- spawnPipe cmd $ P.mapM $ \(ReifiedReactPipe' f) -> do
             (out',input) <- spawn $ bounded 10
@@ -57,8 +58,9 @@ execute' e cmd = do
     finalize $ (mapM_._1) cancel <$> pool
     return $ splitEvent output & _2 %~ filterJust
 
-execute :: Event s1 (ReifiedReactPipe r a)
-        -> ReactPipe s1 r1 (Event s1 (Either SomeException r),Event s1 a)
+execute :: MonadReact s1 r1 m
+        => Event s1 (ReifiedReactPipe r a)
+        -> m (Event s1 (Either SomeException r),Event s1 a)
 execute e = do
     e' <- spawnPipe e $ P.mapM $ \(ReifiedReactPipe cmd) -> do
             (out,input) <- spawn $ bounded 10

@@ -21,6 +21,7 @@ import Data.Void
 import           Pipes 
 import qualified Pipes.Prelude as P
 import           Pipes.Reactive
+import           Pipes.Reactive.Animate
 import           Pipes.Reactive.Discrete
 import           Pipes.Reactive.Interpreter as P
 -- import           Pipes.Reactive.Socket
@@ -57,7 +58,19 @@ import Text.Printf.TH
 --         -> Pipe () Int m r
 -- numbers n = await >> yield n >> numbers (n+1)
 
-foo8 :: ReactPipe s () ()
+foo9 :: ReactimateT s (ReactPipe s ()) ()
+foo9 = do
+    kb <- spawnSource $ (P.stdinLn >-> P.take 3) >> liftIO (print "end")
+    -- _kb <- spawnSource $ (onTickSec $ each [1..] >-> P.map show >-> P.take 3) >> liftIO (print "end")
+    -- _kb <- spawnSource $ (onTickSec $ each [1..] >-> P.map show >-> P.take 3) >> liftIO (print "end")
+    result $ () <$ filterE ("quit" ==) kb
+    -- result $ () <$ _kb
+    reactimate $ print <$> kb
+    -- reactimate $ putStrLn "AAH!" <$ filterE ("2" ==) kb
+    -- reactimate $ print <$> kb
+    return ()
+
+foo8 :: ReactimateT s (ReactPipe s ()) ()
 foo8 = do
     -- kb <- spawnSource $ (P.stdinLn >-> P.take 3) >> liftIO (print "end")
     _kb <- spawnSource $ (onTickSec $ each [1..] >-> P.map show >-> P.take 3) >> liftIO (print "end")
@@ -69,11 +82,11 @@ foo8 = do
     -- reactimate $ print <$> kb
     return ()
 
-foo7 :: ReactPipe s Int ()
+foo7 :: ReactimateT s (ReactPipe s Int) ()
 foo7 = do
         void $ spawnSource $ (P.zip (tick 5000000) $ each [1..6] >-> P.mapM print) >> return 3
 
-foo1 :: ReactPipe s Int ()
+foo1 :: ReactimateT s (ReactPipe s Int) ()
 foo1 = do
          e0 <- sourcePool_ $ do
             worker $ restart (retries 2) $ onTick 1000000 (each [1..6])
@@ -84,7 +97,7 @@ foo1 = do
                 -- (tick 1000000)
          -- >-> P.map (const ()) >-> numbers 0
          -- spawnSink e0 $ P.take 4 >-> P.drain >> return 13
-         _ <- spawnSource $ onTickSec (each [1..5]) >> return 17
+         _ <- spawnSource $ onTickSec (each [1..5]) >> return 17
          e1 <- pipePool e0 $ do
                 worker $ P.mapM $ \n -> do
                     threadDelay 50000
@@ -98,7 +111,7 @@ foo1 = do
                         -- fail "fool"
                         [sP|- %?|] ("second",n)
                         return $ ("second",n)
-                -- worker $ (P.take 10 >-> P.mapM [sP|take: %d|] >-> P.drain) >> lift (putStrLn "print 11") >> return 11
+                -- worker $ (P.take 10 >-> P.mapM [sP|take: %d|] >-> P.drain) >> lift (putStrLn "print 11") >> return 11
                 worker $ (P.take 11 >-> P.print) >> lift (putStrLn "print 11") >> return 11
          -- result e0
          sinkPool e1 $ do
@@ -112,7 +125,7 @@ foo1 = do
                         lift $ threadDelay 2000000
          reactimate $ print <$> e1
 
-foo3 :: ReactPipe s Int ()
+foo3 :: ReactimateT s (ReactPipe s Int) ()
 foo3 = mdo
         -- let ar = array (1,n) [  ]
             -- n  = 10
@@ -123,12 +136,12 @@ foo3 = mdo
         reactimate $ print <$> e1
         reactimate $ print <$> e2
         v <- accumB (0,0,0) $ unionsWith (.) 
-                [ set _1 . snd <$> e0 
+                [ set _1 . snd <$> e0 
                 , set _2 . snd <$> e1 
                 , set _3 . snd <$> e2 ]
         finalize $ [sP|Outcome: %?|] <$> v
 
-foo5 :: ReactPipe s String ()
+foo5 :: ReactimateT s (ReactPipe s String) ()
 foo5 = do
         e0 <- spawnSource_ $ onTick 100000 (each [1..30])
         (pop,q) <- autonomous [] ((:) <$> e0) $ maybe retry return . uncons
@@ -141,7 +154,7 @@ foo5 = do
         reactimate $ [sP|- Processed: %?|] <$> e1
         reactimate $ [sP|Queue: %?; Adding %d|] <$> q <@> e0
 
-foo4 :: ReactPipe s String ()
+foo4 :: ReactimateT s (ReactPipe s String) ()
 foo4 = do
         e0 <- spawnSource_ $ onTick 750000 (each [1..10])
         e1 <- spawnSource $ (tickSec >-> P.take 11) >> return "foo"
@@ -154,15 +167,16 @@ foo4 = do
 
 type Block s = Writer [Event s (IO ())] ()
 
-block :: Block s -> ReactPipe s r ()
-block = reactimate . fmap f . unionsWith (>>) . execWriter
+block :: Reactimate s r m
+      => Block s -> m ()
+block = reactimate . fmap f . unionsWith (>>) . execWriter
     where
         f x = putStrLn "begin" >> x >> putStrLn "end\n"
 
 reactimate' :: Event s (IO ()) -> Block s
 reactimate' = tell . pure
 
-foo6 :: ReactPipe s String ()
+foo6 :: ReactimateT s (ReactPipe s String) ()
 foo6 = do
         e0 <- spawnSource $ onTickSec (each [1..10]) >> return "foo"
         b  <- stepper 0 e0
@@ -177,7 +191,7 @@ foo6 = do
             reactimate' $ [sP|dx:  %?|] <$> dx
             reactimate' $ [sP|dx': %?|] <$> dx'
 
-foo2 :: ReactPipe s Void ()
+foo2 :: ReactimateT s (ReactPipe s Void) ()
 foo2 = do
          e0 <- spawnSource $ restart (retries 2) $ P.zipWith const 
                 (each [1..3]) 
@@ -213,19 +227,19 @@ foo2 = do
     --   extendible language sum types from GHC.Generics
 
 callTest :: Show r
-         => (forall s. ReactPipe s r ())
+         => (forall s. ReactimateT s (ReactPipe s r) ())
          -> IO ()
 callTest cmd = do
-        x <- trying id $ runReactive cmd
+        x <- trying id $ runReactive $ runReactimate cmd
         print x
 
 main :: IO ()
 main = do
-    -- x <- trying id $ runReactive foo
+    -- x <- trying id $ runReactive foo
     let m = $(do
             let takeWhileJustM _f [] = return []
                 takeWhileJustM f (x:xs) = maybe (return []) (\y -> (y:) <$> takeWhileJustM f xs) =<< f x
-                names n = [ n ++ show i | i <- [1..] ]
+                names n = [ n ++ show i | i <- [1..] ]
                 pairE (e0,e1) = tupE [e0,e1]
                 testCase t = [|callTest $(varE t)|]
                 listDec n = zip (names n) <$> takeWhileJustM lookupValueName (names n)
