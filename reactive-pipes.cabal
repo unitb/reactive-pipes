@@ -55,11 +55,18 @@ library
                     Pipes.FileWatcher
                     Pipes.Reactive
                     Pipes.Reactive.Async
+                    Pipes.Reactive.Animate
+                    Pipes.Reactive.Animate.Class
                     Pipes.Reactive.Category
+                    Pipes.Reactive.Class
                     Pipes.Reactive.Discrete
                     Pipes.Reactive.Dynamic
+                    Pipes.Reactive.Event
+                    Pipes.Reactive.Implicit
+                    Pipes.Reactive.Implicit.Class
                     Pipes.Reactive.Interpreter
                     Pipes.Reactive.Socket
+                    Pipes.Reactive.Types
                     Pipes.Tick
                     -- Pipes.Test
   
