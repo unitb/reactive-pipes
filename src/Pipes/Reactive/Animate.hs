@@ -17,8 +17,6 @@ newtype ReactimateT s m a = ReactimateT { runReactimateT :: WriterT [Event s (IO
     deriving (Functor,Applicative,Monad, MonadTrans,MonadFix,MonadIO)
 
 instance MonadReact s r m => MonadReact s r (ReactimateT s m) where
-    liftReact = lift . liftReact
-    eThrow   = lift . eThrow
     -- mapReact f (ReactimateT (WriterT cmd)) = ReactimateT $ WriterT $ mapReact (over (mapping regroup) f) cmd
 
 regroup :: Iso' ((a,b),c) (a,(b,c))

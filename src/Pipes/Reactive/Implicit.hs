@@ -29,39 +29,19 @@ newtype RWSP scope r w s m a = RWSP (RWST (Event scope r) (Event scope w) (Event
              ,MonadReader (Event scope r),MonadState (Event scope s),MonadWriter (Event scope w))
 
 instance (MonadReact s r m) => MonadReact s r (IOPipe s i o m) where
-    liftReact  = IOPipe . lift . liftReact
-    eThrow = lift . eThrow
-    -- mapReact = _
 instance (Reactimate s r m) => Reactimate s r (IOPipe s i o m) where
-    reactimate = IOPipe . lift . reactimate
 
 instance MonadReact s r m => MonadReact s r (ReaderP s reader m) where
-    liftReact  = ReaderP . lift . liftReact
-    eThrow = lift . eThrow
-    -- mapReact = _
 instance Reactimate s r m => Reactimate s r (ReaderP s reader m) where
-    reactimate = ReaderP . lift . reactimate
 
 instance MonadReact s r m => MonadReact s r (StateP s state m) where
-    liftReact  = StateP . lift . liftReact
-    eThrow = lift . eThrow
-    -- mapReact = _
 instance Reactimate s r m => Reactimate s r (StateP s state m) where
-    reactimate = StateP . lift . reactimate
 
 instance (MonadReact s r m,Semigroup writer) => MonadReact s r (WriterP s writer m) where
-    liftReact  = WriterP . lift . liftReact
-    eThrow = lift . eThrow
-    -- mapReact = _
 instance (Reactimate s r m,Semigroup writer) => Reactimate s r (WriterP s writer m) where
-    reactimate = WriterP . lift . reactimate
 
 instance (MonadReact s r m,Semigroup writer) => MonadReact s r (RWSP s reader writer state m) where
-    liftReact  = RWSP . lift . liftReact
-    eThrow = lift . eThrow
-    -- mapReact = _
 instance (Reactimate s r m,Semigroup writer) => Reactimate s r (RWSP s reader writer state m) where
-    reactimate = RWSP . lift . reactimate
 
     -- problem: buffering IO in Async queues: when the pipe system terminates,
     -- all the unused IO get discarded
