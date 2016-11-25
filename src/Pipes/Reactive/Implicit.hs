@@ -28,11 +28,11 @@ newtype RWSP scope r w s m a = RWSP (RWST (Event scope r) (Event scope w) (Event
     deriving (Functor,Applicative,Monad,MonadTrans,MonadIO,MonadFix
              ,MonadReader (Event scope r),MonadState (Event scope s),MonadWriter (Event scope w))
 
-instance (MonadReact s r m,Semigroup o) => MonadReact s r (IOPipe s i o m) where
+instance (MonadReact s r m) => MonadReact s r (IOPipe s i o m) where
     liftReact  = IOPipe . lift . liftReact
     eThrow = lift . eThrow
     -- mapReact = _
-instance (Reactimate s r m,Semigroup o) => Reactimate s r (IOPipe s i o m) where
+instance (Reactimate s r m) => Reactimate s r (IOPipe s i o m) where
     reactimate = IOPipe . lift . reactimate
 
 instance MonadReact s r m => MonadReact s r (ReaderP s reader m) where
@@ -69,7 +69,7 @@ instance (Reactimate s r m,Semigroup writer) => Reactimate s r (RWSP s reader wr
 selectInput' :: Monad m 
              => Prism' i a 
              -> IOPipe s i o m (Event s a)
-selectInput' = selectInput . pure . Prism
+selectInput' pr = selectInput . pure $ Prism pr
 
 selectInput :: Monad m 
             => Behavior s (ReifiedPrism' i a)
