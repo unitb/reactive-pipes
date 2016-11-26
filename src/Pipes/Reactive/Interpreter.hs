@@ -22,10 +22,10 @@ import Data.Monoid.Monad
 
 import           Prelude hiding (zipWith,zipWith3)
 import           Pipes
-import           Pipes.Concurrent 
-import           Pipes.Reactive hiding (reactimateSTM)
+import           Pipes.Concurrent hiding (Unbounded,Bounded)
+import           Pipes.Reactive   hiding (reactimateSTM)
 import           Pipes.Reactive.Async
-import           Pipes.Safe hiding (register,bracket)
+import           Pipes.Safe       hiding (register,bracket)
 
 import Text.Printf.TH
 
@@ -38,16 +38,44 @@ newtype ReceiverId = ReceiverId Int
     deriving (Enum,Eq,Ord)
 
 data ReactHandle s r = 
-            Thread (IO (Effect (SafeT IO) ()))
+            Thread (IO (IO ()))
             | Init (STM ())
+            --   | ReactEvent (Event s (IO ()))
             | Finalizer  (Behavior s (IO ()))
             | Result (Event s r)
 
 makePrisms ''ReactHandle
 
-mySpawn :: State ChannelLength z
-        -> IO (Output' a,Input a)
-mySpawn opt = do
+waitRead :: Wait a b -> Input a -> IO (Maybe b)
+waitRead (Bounded t) input = do
+            timer <- registerDelay t
+            S.atomically $ (Just <$> recv input) <|> 
+                (do check =<< readTVar timer ; return $ Just Nothing)
+waitRead NoWait input = do
+            S.atomically $ (Just <$> recv input) <|> 
+                return (Just Nothing)
+waitRead Unbounded input = S.atomically $ recv input
+
+fromInput' :: (MonadIO m) 
+           => Wait a b
+           -> Input a
+           -> Producer' b m ()
+fromInput' w input = loop
+  where
+    loop = do
+        ma <- liftIO $ waitRead w input
+        case ma of
+            Nothing -> return ()
+            Just a  -> do
+                yield a
+                loop
+
+
+
+mySpawn :: MonadIO m
+        => ChannelOpt a a' f z
+        -> IO (Output' a,Producer a' m ())
+mySpawn (ChannelOpt opt w) = do
     let (ChannelLength n) = execState opt $ ChannelLength 10
     writers <- newTVarIO 0
     let _ = writers :: TVar Int
@@ -65,22 +93,23 @@ mySpawn opt = do
               modifyTVar' writers pred
               readTVar writers
         sealAfterLast (Input i) = Input $ i `orElse` sealIf
-    return (Output' getOut,sealAfterLast input)
+    return (Output' getOut,fromInput' w $ sealAfterLast input)
 
 splitHandles :: [ReactHandle s r] 
-             -> ( [IO (Effect (SafeT IO) ())]
+             -> ( [IO (IO ())]
                 , [STM ()]
                 , [Event s r]
                 , [Behavior s (IO ())]) 
 splitHandles = flip foldr mempty $ \case 
             Thread ts    -> _1 <>~ [ts]
-            Init proc    -> _2 <>~ [proc] -- ([],[],[proc],[],[],[])
-            Result e     -> _3 <>~ [e] -- ([],[],[],[],[e],[])
-            Finalizer final -> _4 <>~ [final] -- ([],[],[],[],[],[final])
+            Init proc    -> _2 <>~ [proc]
+            Result e     -> _3 <>~ [e] 
+            Finalizer final -> _4 <>~ [final] 
 
-newThread :: IO (Effect (SafeT IO) ()) 
+newThread :: IORunnable m
+          => IO (Effect (SafeT m) ()) 
           -> M s r ()
-newThread t = tell [Thread $ onException' 
+newThread t = tell [Thread $ runIO . runSafeT . runEffect <$> onException' 
                         (filtered $ isn't _ThreadKilled) 
                         (liftIO . [sP|failed because of: %?|]) <$> t]
 
@@ -92,15 +121,29 @@ onException' :: MonadCatch m
 onException' pr f = handleJust (preview pr) (liftA2 (>>) f $ throwM . review pr)
 
 
-readEvent :: State ChannelLength z
+readEvent :: MonadIO m
+          => ChannelOpt a a' f z
           -> Event s a 
-          -> M s r (Producer a (SafeT IO) ())
+          -> M s r (Producer a' m ())
 readEvent opt e = do
         (out,input) <- lift $ mySpawn opt
-        writer $ case e of
-                Never -> (return (),[])
+            -- Super duper important: the pattern matchings below must be
+            --   separated so that, instead of having a lazy pairs which forces
+            --   the evaluation of `e`, we have a pair whose component forces
+            --   the evaluation of `e`.
+            -- 
+            --   In the first case, the Writer monad, when separating the output
+            --   and the result will cause `e` to be evaluated. In the other
+            --   case, the writer can build a string of lazy  concatenation of
+            --   lists and a network of events, neither of which needs to be
+            --   evaluated before
+        tell $ case e of
+                Never -> []
                 Event f _ -> 
-                    (fromInput input, [Init $ registerSet f out])
+                    [Init $ registerSet f out]
+        return $ case e of
+                Never -> return ()
+                Event _ _ -> input
 
 conditional :: (a -> STM (Maybe b))
             -> Output b -> Output a
@@ -150,7 +193,8 @@ withChannel (Output' cmd) f = do
         prog <- f out
         return $ prog `finally` liftIO (atomically final)
 
-makeEvent :: NonEmpty (Producer a (SafeT IO) ())
+makeEvent :: IORunnable m
+          => NonEmpty (Producer a (SafeT m) ())
           -> M s r (Event s a)
 makeEvent sources = do
         es <- forM sources $ \src -> do
@@ -169,7 +213,7 @@ makeEvent sources = do
 
 runReactive' :: Free (ReactiveF s r) a -> M s r a
 runReactive' (Pure x) = return x
-runReactive' (Free (Source _ source f)) = do
+runReactive' (Free (Source source f)) = do
         e <- makeEvent source
         runReactive' $ f e
 runReactive' (Free (Transform n pipe e f)) = do
@@ -207,7 +251,7 @@ runReactive' (Free (Finalize e f)) = do
 
 data Machine r = Machine 
         (STM r) 
-        [Effect (SafeT IO) ()] 
+        [IO ()] 
         (STM (IO ()))
 
 unwrapBehavior :: Behavior s a -> STM a
@@ -242,7 +286,7 @@ runMachine (Machine res ts' final) = do
         bracket (newTVarIO []) 
           wrapup
           (\r -> do
-            hs  <- mapM (async.runEffect.runSafeP) ts'
+            hs  <- mapM async ts'
             atomically $ writeTVar r hs
             collectAll_ res (writeTVar r) hs >>= \case 
                 Right x -> return x

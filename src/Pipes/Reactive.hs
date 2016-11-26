@@ -24,7 +24,6 @@ import Control.Lens
 import Control.Monad.Catch hiding (onException)
 import Control.Monad.Free
 import Control.Monad.RWS
-import Control.Monad.State
 import Control.Monad.Writer
 
 import           Data.List.NonEmpty hiding (reverse)
@@ -41,8 +40,6 @@ import Pipes.Reactive.Event
 
 data Restart a = Restart Int (Prism' SomeException a)
 
-chanLen :: Lens' ChannelLength Int
-chanLen f (ChannelLength n) = ChannelLength <$> f n
 
 switchB :: MonadReact s r m
         => Behavior s a
@@ -119,124 +116,124 @@ resource alloc free = do
       finalize $ pure $ free r
       return r
 
-spawnSource :: MonadReact s r m
+spawnSource :: (MonadReact s r m)
             => Producer a IO r 
             -> m (Event s a)
 spawnSource = spawnSourceWith $ return ()
 
-spawnSource_ :: MonadReact s r m
+spawnSource_ :: (MonadReact s r m)
              => Producer a IO ()
              -> m (Event s a)
 spawnSource_ = spawnSourceWith_ $ return ()
 
-spawnSourceWith :: MonadReact s r m
-                => State ChannelLength z
-                -> Producer a IO r 
+spawnSourceWith :: (MonadReact s r m,IORunnable f)
+                => ChannelOpt' f
+                -> Producer a f r 
                 -> m (Event s a)
 spawnSourceWith opt source = sourcePoolWith opt $ worker source
 
-spawnSourceWith_ :: MonadReact s r m
-                 => State ChannelLength z
-                 -> Producer a IO ()
+spawnSourceWith_ :: (MonadReact s r m,IORunnable f)
+                 => ChannelOpt' f 
+                 -> Producer a f ()
                  -> m (Event s a)
 spawnSourceWith_ opt source = sourcePoolWith_ opt $ worker source
 
-sourcePool :: MonadReact s r m
-           => SourcePool a r ()
+sourcePool :: (MonadReact s r m)
+           => SourcePool IO a r ()
            -> m (Event s a)
 sourcePool = sourcePoolWith $ return ()
 
-sourcePool_ :: MonadReact s r m
-            => SourcePool a () ()
+sourcePool_ :: (MonadReact s r m)
+            => SourcePool IO a () ()
             -> m (Event s a)
 sourcePool_ = sourcePoolWith_ $ return ()
 
-sourcePoolWith_ :: MonadReact s r m
-                => State ChannelLength z
-                -> SourcePool a () ()
+sourcePoolWith_ :: (MonadReact s r m,IORunnable f)
+                => ChannelOpt' f
+                -> SourcePool f a () ()
                 -> m (Event s a)
-sourcePoolWith_ opt source = liftReact $ ReactPipe $ case nonEmpty $ execWriter source of
-                              Just xs -> Free (Source (() <$ opt) (f <$> xs) Pure)
+sourcePoolWith_ _ source = liftReact $ ReactPipe $ case nonEmpty $ execWriter source of
+                              Just xs -> Free (Source (f <$> xs) Pure)
                               Nothing -> Pure Never
     where
         f = hoist lift
 
-sourcePoolWith :: MonadReact s r m
-               => State ChannelLength z
-               -> SourcePool a r ()
+sourcePoolWith :: (MonadReact s r m,IORunnable f)
+               => ChannelOpt' f
+               -> SourcePool f a r ()
                -> m (Event s a)
-sourcePoolWith opt source = liftReact $ case nonEmpty $ execWriter source of
-                              Just xs -> ReactPipe (Free $ Source (() <$ opt) (f <$> xs) Pure) 
+sourcePoolWith _ source = liftReact $ case nonEmpty $ execWriter source of
+                              Just xs -> ReactPipe (Free $ Source (f <$> xs) Pure) 
                                             >>= uncurry split . splitEvent
                               Nothing -> ReactPipe $ Pure Never
     where
         f x = (hoist lift x >-> P.map Right) >>= yield . Left
         split x y = result x >> return y
 
-worker :: Proxy a a' b b' IO r
-       -> ThreadPool a a' b b' r ()
+worker :: Proxy a a' b b' f r
+       -> ThreadPool f a a' b b' r ()
 worker = tell . pure
 
-spawnSink :: MonadReact s r m
+spawnSink :: (MonadReact s r m)
           => Event s a 
           -> Consumer a IO r 
           -> m ()
 spawnSink = spawnSinkWith $ return ()
 
-spawnSink_ :: MonadReact s r m
+spawnSink_ :: (MonadReact s r m)
            => Event s a 
            -> Consumer a IO () 
            -> m ()
 spawnSink_ = spawnSinkWith_ $ return ()
 
-spawnSinkWith :: MonadReact s r m
-              => State ChannelLength z
+spawnSinkWith :: (MonadReact s r m,IORunnable f)
+              => ChannelOpt a a' f z
               -> Event s a 
-              -> Consumer a IO r 
+              -> Consumer a' f r 
               -> m ()
 spawnSinkWith opt e = sinkPoolWith opt e . worker
 
-spawnSinkWith_ :: MonadReact s r m
-               => State ChannelLength z
+spawnSinkWith_ :: (MonadReact s r m,IORunnable f)
+               => ChannelOpt a a' f z
                -> Event s a 
-               -> Consumer a IO () 
+               -> Consumer a' f () 
                -> m ()
 spawnSinkWith_ opt e = sinkPoolWith_ opt e . worker
 
-sinkPoolWith :: MonadReact s r m
-             => State ChannelLength z
+sinkPoolWith :: (MonadReact s r m,IORunnable f)
+             => ChannelOpt a a' f z
              -> Event s a 
-             -> SinkPool a r () 
+             -> SinkPool f a' r () 
              -> m ()
 sinkPoolWith opt e sinks = liftReact $ case nonEmpty $ execWriter sinks of
-                            Just xs -> ReactPipe (Free $ Transform (() <$ opt) (f <$> xs) e Pure)
-                                          >>= result
-                            Nothing -> ReactPipe $ Pure ()
+        Just xs -> ReactPipe (Free $ Transform (() <$ opt) (f <$> xs) e Pure)
+                      >>= result
+        Nothing -> ReactPipe $ Pure ()
     where
         f x = (hoist lift x >-> P.map closed) >>= yield
 
-sinkPoolWith_ :: MonadReact s r m
-              => State ChannelLength z
+sinkPoolWith_ :: (MonadReact s r m,IORunnable f)
+              => ChannelOpt a a' f z
               -> Event s a 
-              -> SinkPool a () () 
+              -> SinkPool f a' () () 
               -> m ()
 sinkPoolWith_ opt e sinks = liftReact $ ReactPipe $ case nonEmpty $ execWriter sinks of
-                            Just xs -> Free (Sink (() <$ opt) (hoist lift <$> xs) e $ Pure ())
-                            Nothing -> Pure ()
+              Just xs -> Free (Sink (() <$ opt) (hoist lift <$> xs) e $ Pure ())
+              Nothing -> Pure ()
 
-sinkPool :: MonadReact s r m
+sinkPool :: (MonadReact s r m)
          => Event s a 
-         -> SinkPool a r () 
+         -> SinkPool IO a r () 
          -> m ()
 sinkPool = sinkPoolWith $ return ()
 
-sinkPool_ :: MonadReact s r m
+sinkPool_ :: (MonadReact s r m)
           => Event s a 
-          -> SinkPool a () () 
+          -> SinkPool IO a () () 
           -> m ()
 sinkPool_ = sinkPoolWith_ $ return ()
 
-spawnPipe :: MonadReact s r m
+spawnPipe :: (MonadReact s r m)
           => Event s a 
           -> Pipe a b IO r
           -> m (Event s b)
@@ -248,36 +245,36 @@ spawnPipe_ :: MonadReact s r m
            -> m (Event s b)
 spawnPipe_ = spawnPipeWith_ $ return ()
 
-spawnPipeWith :: MonadReact s r m
-              => State ChannelLength z
+spawnPipeWith :: (MonadReact s r m,IORunnable f)
+              => ChannelOpt a a' f z
               -> Event s a 
-              -> Pipe a b IO r
+              -> Pipe a' b f r
               -> m (Event s b)
 spawnPipeWith opt e = pipePoolWith opt e . worker
 
-spawnPipeWith_ :: MonadReact s r m
-               => State ChannelLength z
+spawnPipeWith_ :: (MonadReact s r m,IORunnable f)
+               => ChannelOpt a a' f z
                -> Event s a 
-               -> Pipe a b IO ()
+               -> Pipe a' b f ()
                -> m (Event s b)
 spawnPipeWith_ opt e = pipePoolWith_ opt e . worker
 
-pipePool :: MonadReact s r m
+pipePool :: (MonadReact s r m)
          => Event s a 
-         -> PipePool a b r ()
+         -> PipePool IO a b r ()
          -> m (Event s b)
 pipePool = pipePoolWith $ return ()
 
-pipePool_ :: MonadReact s r m
+pipePool_ :: (MonadReact s r m)
           => Event s a 
-          -> PipePool a b () ()
+          -> PipePool IO a b () ()
           -> m (Event s b)
 pipePool_ = pipePoolWith_ $ return ()
 
-pipePoolWith :: MonadReact s r m
-             => State ChannelLength z
+pipePoolWith :: (MonadReact s r m,IORunnable f)
+             => ChannelOpt a a' f z
              -> Event s a 
-             -> PipePool a b r ()
+             -> PipePool f a' b r ()
              -> m (Event s b)
 pipePoolWith opt e pipes = liftReact $ case nonEmpty $ execWriter pipes of
         Just xs ->  ReactPipe (Free $ Transform (() <$ opt) (f <$> xs) e Pure)
@@ -287,10 +284,10 @@ pipePoolWith opt e pipes = liftReact $ case nonEmpty $ execWriter pipes of
         f x = (hoist lift x >-> P.map Right) >>= yield . Left
         split x y = result x >> return y
 
-pipePoolWith_ :: MonadReact s r m
-              => State ChannelLength z
+pipePoolWith_ :: (MonadReact s r m,IORunnable f)
+              => ChannelOpt a a' f z
               -> Event s a 
-              -> PipePool a b () ()
+              -> PipePool f a' b () ()
               -> m (Event s b)
 pipePoolWith_ opt e pipes = liftReact $ ReactPipe $ case nonEmpty $ execWriter pipes of
         Just xs -> Free (Transform (() <$ opt) (hoist lift <$> xs) e Pure)
@@ -310,7 +307,7 @@ autonomous :: MonadReact s r m
 autonomous = autonomousWith $ return ()
 
 autonomousEventWith :: MonadReact s r m
-                    => State ChannelLength z 
+                    => ChannelOpt' IO
                     -> a 
                     -> Event s (a -> a) 
                     -> (a -> STM (b,a))
@@ -327,7 +324,7 @@ autonomousEventWith opt x e f = do
         return (fst <$> e',snd <$> e')
 
 autonomousWith :: MonadReact s r m
-               => State ChannelLength z 
+               => ChannelOpt' IO
                -> a 
                -> Event s (a -> a) 
                -> (a -> STM (b,a))
@@ -364,11 +361,11 @@ stepper :: MonadReact s r m
         -> m (Behavior s a)
 stepper x = accumB x . fmap const
 
-type ThreadPool a a' b b' r = Writer [Proxy a a' b b' IO r]
+type ThreadPool f a a' b b' r = Writer [Proxy a a' b b' f r]
 
-type SinkPool a r = Writer [Consumer a IO r]
-type SourcePool a r = Writer [Producer a IO r]
-type PipePool a b r = Writer [Pipe a b IO r]
+type SinkPool f a r = Writer [Consumer a f r]
+type SourcePool f a r = Writer [Producer a f r]
+type PipePool f a b r = Writer [Pipe a b f r]
 
 decrease :: Restart b -> Restart b
 decrease (Restart n pr) = Restart (n-1) pr

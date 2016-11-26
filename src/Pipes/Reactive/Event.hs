@@ -9,7 +9,8 @@ import Control.Monad.STM
 import           Data.Foldable
 import           Data.Map (Map)
 import qualified Data.Map as Map
-import           Data.Semigroup
+import           Data.Monoid (First)
+import           Data.Semigroup hiding (First)
 import           Data.These
 
 import Pipes.Concurrent
@@ -68,7 +69,7 @@ unionWith f (Event e0 e0') (Event e1 e1') = Event
 never :: Event s a
 never = Never
 
-filterPrism :: Prism' t a -> Event s t -> Event s a
+filterPrism :: Getting (First a) t a -> Event s t -> Event s a
 filterPrism pr = filterJust . fmap (preview pr)
 
 filterJust :: Event s (Maybe a) -> Event s a

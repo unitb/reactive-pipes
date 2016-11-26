@@ -1,7 +1,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Pipes.Reactive.Animate 
     ( module Pipes.Reactive.Animate 
-    , module Pipes.Reactive.Animate.Class )
+    , module Pipes.Reactive.Animate.Class 
+    , MonadTrans (..) )
 where
 
 import Control.Lens
