@@ -60,11 +60,15 @@ library
                     Pipes.Reactive.Category
                     Pipes.Reactive.Class
                     Pipes.Reactive.Discrete
+                    Pipes.Reactive.Discrete.Alt
                     Pipes.Reactive.Dynamic
                     Pipes.Reactive.Event
                     Pipes.Reactive.Implicit
                     Pipes.Reactive.Implicit.Class
                     Pipes.Reactive.Interpreter
+                    Pipes.Reactive.Queue
+                    Pipes.Reactive.Seq
+                    Pipes.Reactive.Seq.Class
                     Pipes.Reactive.Socket
                     Pipes.Reactive.Types
                     Pipes.Tick
