@@ -4,7 +4,7 @@ module Main where
 import Control.Applicative
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.STM
-import Control.Exception.Lens
+import Control.Exception.Lens hiding (handler)
 -- import Control.Concurrent.Async
 import Control.Lens hiding (each)
 import Control.Monad
@@ -13,6 +13,8 @@ import Control.Monad.Writer
 -- import System.Posix.Process.ByteString
 
 -- import Data.Array
+-- import           Data.Map as M (Map)
+import qualified Data.Map as M
 -- import Data.Bitraversable
 -- import Data.Either.Combinators
 -- import Data.Serialize
@@ -24,6 +26,7 @@ import           Pipes.Reactive
 import           Pipes.Reactive.Animate
 import           Pipes.Reactive.Discrete
 import           Pipes.Reactive.Interpreter as P
+import           Pipes.Reactive.Queue
 -- import           Pipes.Reactive.Socket
 -- import           Pipes.Safe
 import           Pipes.Tick
@@ -58,6 +61,44 @@ import Text.Printf.TH
 --         -> Pipe () Int m r
 -- numbers n = await >> yield n >> numbers (n+1)
 
+display :: Reactimate s r m
+        => Discrete s String
+        -> m ()
+display v = do
+        liftIO $ putStrLn $ valueD v
+        v' <- updates v
+        reactimate $ putStrLn <$> v'
+
+foo11 :: ReactimateT s (ReactPipe s ()) ()
+foo11 = do
+        kb <- spawnSource P.stdinLn
+        let b  = accumD m0 $ (\x -> M.insert x x) <$> filterPrism _Show kb
+            m0 = M.fromList $ zip [1..20] [1..20]
+        (q,l) <- workPool (\k x -> threadDelay 2000000 >> return (k,x)) b
+        result $ filterPrism (only "quit") kb
+        display $ [s|-----\nQueue: %?\nLength: %d|] <$> q <*> l
+
+foo10 :: ReactimateT s (ReactPipe s ()) ()
+foo10 = do
+    kb <- spawnSource P.stdinLn
+    let split n | n == 0    = Nothing
+                | otherwise = Just (n,n - 1)
+        inc  = filterE ("inc" ==) kb
+        quit = filterPrism (only "quit") kb
+    (r,ss,d) <- workQueueWith 
+        (workerNum .= 2)
+        QueueBehavior
+            { initState = 10 
+            , stateUpdate = (10 +) <$ inc
+            , getWorkItem = split 
+            , handler = \x -> threadDelay 1000000 >> return (100 + x) }
+
+    upd <- updates d
+    reactimate $ [sP|r: %d|] <$> r
+    reactimate $ [sP|s: %d|] <$> ss
+    reactimate $ [sP|upd: %d|] <$> upd
+    result quit
+
 foo9 :: ReactimateT s (ReactPipe s ()) ()
 foo9 = do
     kb <- spawnSource $ (P.stdinLn >-> P.take 3) >> liftIO (print "end")
@@ -73,7 +114,7 @@ foo9 = do
 foo8 :: ReactimateT s (ReactPipe s ()) ()
 foo8 = do
     -- kb <- spawnSource $ (P.stdinLn >-> P.take 3) >> liftIO (print "end")
-    _kb <- spawnSource $ (onTickSec $ each [1..] >-> P.map show >-> P.take 3) >> liftIO (print "end")
+    _kb <- spawnSource $ (onTickSec $ each [1 :: Int ..] >-> P.map show >-> P.take 3) >> liftIO (print "end")
     -- _kb <- spawnSource $ (onTickSec $ each [1..] >-> P.map show >-> P.take 3) >> liftIO (print "end")
     result $ () <$ filterE ("2" ==) _kb
     -- result $ () <$ _kb
