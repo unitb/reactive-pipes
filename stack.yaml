@@ -46,6 +46,8 @@ ghc-options:
 extra-deps: 
 - monoid-transformer-0.0.3
 - th-printf-0.3.1
+- these-0.7.3
+- pipes-concurrency-2.0.7
 
 # Override default flag values for local packages and extra-deps
 flags: {}
