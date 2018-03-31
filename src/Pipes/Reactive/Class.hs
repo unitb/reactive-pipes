@@ -10,7 +10,7 @@ import Control.Monad.RWS
 import Control.Monad.Except
 import Control.Monad.Free
 import Control.Monad.Trans.Maybe
-import Control.Monad.Trans.Either
+import Control.Monad.Trans.Except
 
 import Pipes.Reactive.Event
 import Pipes.Reactive.Types
@@ -22,8 +22,8 @@ class (MonadFix m,MonadIO m) => MonadReact s r m | m -> s, m -> r where
     liftReact  = lift . liftReact
     eThrow :: Exception e => Event s e -> m ()
     default eThrow :: (m ~ t m', MonadTrans t,MonadReact s r m'
-                      ,Exception e) 
-                   => Event s e 
+                      ,Exception e)
+                   => Event s e
                    -> m ()
     eThrow = lift . eThrow
     -- mapReact :: (forall b. ReactPipe s r (a,b) -> ReactPipe s r (a,b)) -> m a -> m a
@@ -35,7 +35,7 @@ instance MonadReact s r (ReactPipe s r) where
     -- mapReact f = fmap fst . f . fmap (,())
 
 reactimateSTM :: MonadReact s r m
-              => Event s (STM ()) 
+              => Event s (STM ())
               -> m ()
 reactimateSTM e = liftReact $ ReactPipe $ Free $ ReactimateSTM e $ Pure ()
 
@@ -44,6 +44,4 @@ instance (MonadReact s r m,Monoid writer) => MonadReact s r (WriterT writer m) w
 instance MonadReact s r m => MonadReact s r (StateT reader m) where
 instance (MonadReact s r m,Monoid writer) => MonadReact s r (RWST reader writer state m) where
 instance (MonadReact s r m) => MonadReact s r (ExceptT e m) where
-instance (MonadReact s r m) => MonadReact s r (EitherT e m) where
 instance (MonadReact s r m) => MonadReact s r (MaybeT m) where
-

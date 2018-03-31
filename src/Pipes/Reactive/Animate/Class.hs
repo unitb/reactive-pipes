@@ -7,7 +7,7 @@ import Control.Monad.Writer
 import Control.Monad.RWS
 import Control.Monad.Except
 import Control.Monad.Trans.Maybe
-import Control.Monad.Trans.Either
+import Control.Monad.Trans.Except
 
 import Pipes.Reactive.Class
 import Pipes.Reactive.Event
@@ -24,6 +24,4 @@ instance (Reactimate s r m,Monoid writer) => Reactimate s r (WriterT writer m) w
 instance Reactimate s r m => Reactimate s r (StateT reader m) where
 instance (Reactimate s r m,Monoid writer) => Reactimate s r (RWST reader writer state m) where
 instance (Reactimate s r m) => Reactimate s r (ExceptT e m) where
-instance (Reactimate s r m) => Reactimate s r (EitherT e m) where
 instance (Reactimate s r m) => Reactimate s r (MaybeT m) where
-

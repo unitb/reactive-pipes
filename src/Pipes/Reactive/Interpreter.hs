@@ -1,5 +1,5 @@
 {-# LANGUAGE LambdaCase,TemplateHaskell,QuasiQuotes #-}
-module Pipes.Reactive.Interpreter 
+module Pipes.Reactive.Interpreter
     ( runMachine, runReactive, compile )
 where
 
@@ -18,7 +18,7 @@ import Data.Either
 import Data.List.NonEmpty as N hiding (length,zipWith,head,last)
 import qualified Data.Map as Map
 import Data.Maybe
-import Data.Monoid.Monad
+import Data.Semigroup.Monad
 
 import           Prelude hiding (zipWith,zipWith3)
 import           Pipes
@@ -31,13 +31,13 @@ import Text.Printf.TH
 
 type M s r = RWST ()
             [ReactHandle s r]
-            SenderId 
+            SenderId
             IO
 
 newtype ReceiverId = ReceiverId Int
     deriving (Enum,Eq,Ord)
 
-data ReactHandle s r = 
+data ReactHandle s r =
             Thread (IO (IO ()))
             | Init (STM ())
             --   | ReactEvent (Event s (IO ()))
@@ -49,14 +49,14 @@ makePrisms ''ReactHandle
 waitRead :: Wait a b -> Input a -> IO (Maybe b)
 waitRead (Bounded t) input = do
             timer <- registerDelay t
-            S.atomically $ (Just <$> recv input) <|> 
+            S.atomically $ (Just <$> recv input) <|>
                 (do check =<< readTVar timer ; return $ Just Nothing)
 waitRead NoWait input = do
-            S.atomically $ (Just <$> recv input) <|> 
+            S.atomically $ (Just <$> recv input) <|>
                 return (Just Nothing)
 waitRead Unbounded input = S.atomically $ recv input
 
-fromInput' :: (MonadIO m) 
+fromInput' :: (MonadIO m)
            => Wait a b
            -> Input a
            -> Producer' b m ()
@@ -81,7 +81,7 @@ mySpawn (ChannelOpt opt w) = do
     let _ = writers :: TVar Int
     q <- newTBQueueIO n
     let input  = Input $ Just <$> readTBQueue q
-        out    = Output $ fmap (const True) . writeTBQueue q 
+        out    = Output $ fmap (const True) . writeTBQueue q
         getOut = do
                 modifyTVar' writers succ
                 return (out,decAndSeal)
@@ -95,23 +95,23 @@ mySpawn (ChannelOpt opt w) = do
         sealAfterLast (Input i) = Input $ i `orElse` sealIf
     return (Output' getOut,fromInput' w $ sealAfterLast input)
 
-splitHandles :: [ReactHandle s r] 
+splitHandles :: [ReactHandle s r]
              -> ( [IO (IO ())]
                 , [STM ()]
                 , [Event s r]
-                , [Behavior s (IO ())]) 
-splitHandles = flip foldr mempty $ \case 
+                , [Behavior s (IO ())])
+splitHandles = flip foldr mempty $ \case
             Thread ts    -> _1 <>~ [ts]
             Init proc    -> _2 <>~ [proc]
-            Result e     -> _3 <>~ [e] 
-            Finalizer final -> _4 <>~ [final] 
+            Result e     -> _3 <>~ [e]
+            Finalizer final -> _4 <>~ [final]
 
 newThread :: IORunnable m
-          => IO (Effect (SafeT m) ()) 
+          => IO (Effect (SafeT m) ())
           -> M s r ()
-newThread t = tell [Thread $ runIO . runSafeT . runEffect <$> onException' 
-                        (filtered $ isn't _ThreadKilled) 
-                        (liftIO . [sP|failed because of: %?|]) <$> t]
+newThread t = tell [Thread $ runIO . runSafeT . runEffect <$> onException'
+                        (filtered $ isn't _ThreadKilled)
+                        [Text.Printf.TH.p|failed because of: %?|] <$> t]
 
 onException' :: MonadCatch m
              => Prism' SomeException e
@@ -123,7 +123,7 @@ onException' pr f = handleJust (preview pr) (liftA2 (>>) f $ throwM . review pr)
 
 readEvent :: MonadIO m
           => ChannelOpt a a' f z
-          -> Event s a 
+          -> Event s a
           -> M s r (Producer a' m ())
 readEvent opt e = do
         (out,input) <- lift $ mySpawn opt
@@ -131,7 +131,7 @@ readEvent opt e = do
             --   separated so that, instead of having a lazy pairs which forces
             --   the evaluation of `e`, we have a pair whose component forces
             --   the evaluation of `e`.
-            -- 
+            --
             --   In the first case, the Writer monad, when separating the output
             --   and the result will cause `e` to be evaluated. In the other
             --   case, the writer can build a string of lazy  concatenation of
@@ -139,7 +139,7 @@ readEvent opt e = do
             --   evaluated before
         tell $ case e of
                 Never -> []
-                Event f _ -> 
+                Event f _ ->
                     [Init $ registerSet f out]
         return $ case e of
                 Never -> return ()
@@ -165,7 +165,7 @@ reactimateSTM e = do
                 Never -> []
                 Event _ f -> [Init $ registerSet f runOutput]
 
-allocate :: (Enum a,Monad m,Monoid w) 
+allocate :: (Enum a,Monad m,Monoid w)
          => Lens' s a -> RWST r w s m a
 allocate ln = zoom ln $ state $ liftA2 (,) id succ
 
@@ -173,10 +173,10 @@ catOutput :: Output (Maybe a) -> Output a
 catOutput = contramap Just
 
 compileOut :: [(Output (Maybe a), STM Int)] -> (Output a, STM Int)
-compileOut = bimap catOutput (fmap getSum . run) . foldMap (second $ Cons . fmap Sum)
+compileOut = bimap catOutput (fmap getSum . getMon) . foldMap (second $ Mon . fmap Sum)
 
 makeChannel :: M s r (ChannelSet s a,Output' a)
-makeChannel = do 
+makeChannel = do
         n <- allocate id
         v <- lift $ newTVarIO []
         let ch (Output' out') = modifyTVar' v . (:) =<< out'
@@ -201,13 +201,13 @@ makeEvent sources = do
             (v,getV) <- makeChannel
             (u,getU) <- makeChannel
             newThread $ atomically $
-                withChannel getV $ \out -> 
+                withChannel getV $ \out ->
                 withChannel getU $ \upd -> do
                     return $ src >-> toOutput (out <> upd)
             return $ Event v u
         return $ unionsWith const es
 
-    -- Idea: 
+    -- Idea:
     --  put the Map as part of channels
     --  add SendId to events too?
 
@@ -224,7 +224,7 @@ runReactive' (Free (Sink n sinks e cmd)) = do
         input <- readEvent n e
         forM_ sinks $ \snk ->
           newThread $ return $ input >-> snk
-        runReactive' cmd 
+        runReactive' cmd
 runReactive' (Free (MkBehavior x e f)) = do
         ref <- liftIO $ newTVarIO x
         reactimateSTM $ modifyTVar' ref <$> e
@@ -249,26 +249,26 @@ runReactive' (Free (Finalize e f)) = do
         tell [Finalizer e]
         runReactive' f
 
-data Machine r = Machine 
-        (STM r) 
-        [IO ()] 
+data Machine r = Machine
+        (STM r)
+        [IO ()]
         (STM (IO ()))
 
 unwrapBehavior :: Behavior s a -> STM a
 unwrapBehavior (Behavior v) = v
 
 compile :: (forall s. ReactPipe s r a) -> IO (a,Machine r)
-compile (ReactPipe pipe) = do 
-        ((r,x),_,(ts,is,_return,final)) <- (_3 %~ splitHandles) <$> runRWST 
-                (do r <- liftIO newEmptyTMVarIO 
-                    (x,(_,_,ret,_final)) <- listens 
-                            splitHandles 
+compile (ReactPipe pipe) = do
+        ((r,x),_,(ts,is,_return,final)) <- (_3 %~ splitHandles) <$> runRWST
+                (do r <- liftIO newEmptyTMVarIO
+                    (x,(_,_,ret,_final)) <- listens
+                            splitHandles
                             (runReactive' $ do
                                 pipe
                                 )
                     reactimateSTM $ void . tryPutTMVar r <$> unionsWith const ret
-                    return (takeTMVar r,x) ) 
-                () 
+                    return (takeTMVar r,x) )
+                ()
                 (SenderId 0)
         mapM_ atomically is
         ts' <- sequence ts
@@ -282,13 +282,12 @@ runMachine (Machine res ts' final) = do
         let wrapup r = do
                 mapM_ cancel <=< atomically . readTVar $ r
                 join $ atomically final
-        [sP| Threads: %d - ... |] $ length ts'
-        bracket (newTVarIO []) 
+        [Text.Printf.TH.p| Threads: %d - ... |] $ length ts'
+        bracket (newTVarIO [])
           wrapup
           (\r -> do
             hs  <- mapM async ts'
             atomically $ writeTVar r hs
-            collectAll_ res (writeTVar r) hs >>= \case 
+            collectAll_ res (writeTVar r) hs >>= \case
                 Right x -> return x
                 Left (e :| _) -> throwM e)
-

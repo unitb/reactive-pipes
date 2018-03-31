@@ -1,0 +1,32 @@
+
+name: reactive-pipes
+
+version: 0.1.0.0
+
+ghc-options: -Wall
+
+default-extensions: ExistentialQuantification, DeriveFunctor, DeriveFoldable, DeriveTraversable, GeneralizedNewtypeDeriving, GADTs, KindSignatures, MultiParamTypeClasses, RankNTypes, DefaultSignatures, FlexibleInstances, FunctionalDependencies, TupleSections, ScopedTypeVariables, FlexibleContexts
+
+dependencies:
+  - async
+  - base
+  - containers
+  - directory
+  - either
+  - exceptions
+  - free
+  - lens
+  - mtl
+  - pipes
+  - pipes-concurrency
+  - pipes-safe
+  - reducers
+  - stm
+  - th-printf
+  - these
+  - time
+  - transformers
+  - vault
+
+library:
+  source-dirs: src/

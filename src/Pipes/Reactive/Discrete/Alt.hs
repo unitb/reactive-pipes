@@ -39,6 +39,9 @@ toBehavior :: MonadReact s r m
            -> m (Behavior s a)
 toBehavior d@(Discrete x _) = stepper (x^._1) =<< updates d
 
+-- applyD :: Discrete s (a -> b) -> Event s a -> Event s b
+-- applyD (Discrete x e) = _
+
 double :: a -> PairR a a
 double x = PairR x x
 

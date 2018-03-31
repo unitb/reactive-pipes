@@ -30,6 +30,8 @@ instance Applicative (Discrete s) where
               (xF,xX) 
               (unionWith (.) (first <$> stepF) (second <$> stepX))
 
+-- applyD :: Discrete s (a -> b) -> Event s a -> Event s b
+-- applyD (Discrete f x e) = _
 
 toBehavior :: MonadReact s r m
            => Discrete s a 
